@@ -11,6 +11,9 @@ public class Quiz : Entity
     public Guid TopicId { get; set; }
     public Topic Topic { get; set; }
     
+    [Required]
+    public int MaxPoint { get; set; }
+    
     public Guid UserId { get; set; }
     public User User { get; set; }
 

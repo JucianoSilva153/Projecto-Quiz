@@ -11,4 +11,6 @@ public class Topic : Entity
 
     public User User { get; set; }
     public Guid UserId  { get; set; }
+
+    public IEnumerable<Quiz> Quizzes { get; set; }
 }
