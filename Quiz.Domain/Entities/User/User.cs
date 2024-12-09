@@ -1,6 +1,6 @@
 using Quiz.Domain.Common;
 
-namespace Quiz.Domain.Entities;
+namespace Domain.Entities;
 
 public class User : Entity
 {
