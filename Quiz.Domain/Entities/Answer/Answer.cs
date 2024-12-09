@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using Quiz.Domain.Common;
+using Quiz.Domain.Entities.Questions;
 
-namespace Quiz.Domain.Entities;
+namespace Quiz.Domain.Entities.Answers;
 
 public class Answer : Entity
 {

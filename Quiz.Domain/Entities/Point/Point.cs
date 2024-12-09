@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using Quiz.Domain.Common;
+using Quiz.Domain.Entities.Kwizzes;
+using Quiz.Domain.Entities.Users;
 
-namespace Domain.Entities;
+namespace Quiz.Domain.Entities.Points;
 
 public class Point : Entity
 {
@@ -12,5 +14,5 @@ public class Point : Entity
     public User User { get; set; }
     
     public Guid QuizId { get; set; }
-    public Quiz Quiz { get; set; }
+    public Kwiz Kwiz { get; set; }
 }

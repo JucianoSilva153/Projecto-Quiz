@@ -1,9 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using Quiz.Domain.Common;
+using Quiz.Domain.Entities.Questions;
+using Quiz.Domain.Entities.Topics;
+using Quiz.Domain.Entities.Users;
 
-namespace Domain.Entities;
+namespace Quiz.Domain.Entities.Kwizzes;
 
-public class Quiz : Entity
+public class Kwiz : Entity
 {
     [Required, MaxLength(100)]
     public string Name { get; set; }

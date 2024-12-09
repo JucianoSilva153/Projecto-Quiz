@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using Quiz.Domain.Common.Enum;
+using Quiz.Domain.Entities.Users;
 
-namespace Quiz.Domain.Entities;
+namespace Quiz.Domain.Entities.Accounts;
 
 public class Account
 {

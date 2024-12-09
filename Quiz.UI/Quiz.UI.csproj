@@ -11,4 +11,11 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.7" PrivateAssets="all"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Quiz.Application\Quiz.Application.csproj" />
+      <ProjectReference Include="..\Quiz.Domain\Quiz.Domain.csproj" />
+      <ProjectReference Include="..\Quiz.Infrastructure\Quiz.Infrastructure.csproj" />
+      <ProjectReference Include="..\Quiz.Persistence\Quiz.Persistence.csproj" />
+    </ItemGroup>
+
 </Project>

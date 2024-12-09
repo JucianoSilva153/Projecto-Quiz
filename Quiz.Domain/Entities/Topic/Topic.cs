@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using Quiz.Domain.Common;
+using Quiz.Domain.Entities.Kwizzes;
+using Quiz.Domain.Entities.Users;
 
-namespace Domain.Entities;
+namespace Quiz.Domain.Entities.Topics;
 
 public class Topic : Entity
 {
@@ -12,5 +14,5 @@ public class Topic : Entity
     public User User { get; set; }
     public Guid UserId  { get; set; }
 
-    public IEnumerable<Quiz> Quizzes { get; set; }
+    public IEnumerable<Kwiz> Kwizzes { get; set; }
 }

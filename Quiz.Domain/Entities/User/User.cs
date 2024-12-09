@@ -1,6 +1,9 @@
 using Quiz.Domain.Common;
+using Quiz.Domain.Entities.Accounts;
+using Quiz.Domain.Entities.Kwizzes;
+using Quiz.Domain.Entities.Topics;
 
-namespace Domain.Entities;
+namespace Quiz.Domain.Entities.Users;
 
 public class User : Entity
 {
@@ -11,5 +14,5 @@ public class User : Entity
     public Account Account { get; set; }
 
     public ICollection<Topic> Topics { get; set; }
-    public ICollection<Quiz> Quizzes{ get; set; }
+    public ICollection<Kwiz> Kwizzes{ get; set; }
 }
