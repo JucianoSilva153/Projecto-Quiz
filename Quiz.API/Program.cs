@@ -1,6 +1,7 @@
 using FastEndpoints;
 using Quiz.API.Repositories;
 using Quiz.Persistence;
+using Quiz.Persistence.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,11 +11,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddFastEndpoints();
 builder.Services.AddSwaggerGen();
 builder.Services.AddPersistence();
+
+
 // Adicionar wrappers dos Repositorios
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<KwizzService>();
 builder.Services.AddScoped<TopicService>();
 builder.Services.AddScoped<PointsService>();
+
+
 
 // Configuração de CORS
 builder.Services.AddCors(options =>
@@ -28,7 +33,14 @@ builder.Services.AddCors(options =>
         });
 });
 
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.EnsureCreated();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

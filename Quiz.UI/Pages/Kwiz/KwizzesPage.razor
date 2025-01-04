@@ -1,0 +1,103 @@
+@page "/kwizzes"
+@layout NoLayout
+
+
+<section id="kwizHighligh">
+    <MudStack Style="height: 20%" Justify="Justify.Center" AlignItems="AlignItems.Center">
+        <MudText Typo="Typo.h4">Os Melhores KWIZZES</MudText>
+    </MudStack>
+    <MudStack Justify="Justify.Center" Row Class="px-4" AlignItems="AlignItems.Center">
+        <MudTextField Variant="Variant.Outlined" 
+                      T="string" 
+                      Placeholder="Pesquisar KWIZ" 
+                      @bind-Value="search" 
+                      Adornment="Adornment.Start" 
+                      AdornmentColor="Color.Primary"
+                      Immediate="true"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+        </MudTextField>
+        <MudSelect Label="Filtro por Topico"
+                   @bind-Value="@currentTopic"
+                   Variant="Variant.Outlined"
+                   Adornment="Adornment.Start"
+                   AdornmentColor="Color.Primary"
+                   AdornmentIcon="@Icons.Material.Filled.Topic">
+            <MudSelectItem Value="@string.Empty">Sem Filtro</MudSelectItem>
+            @foreach (var topic in TopicList)
+            {
+            <MudSelectItem Value="topic.TopicName">@topic.TopicName</MudSelectItem>
+            }
+        </MudSelect>
+    </MudStack>
+    <MudStack Style="height: 80%">
+        <div class="d-flex flex-wrap gap-4" style="overflow: auto;padding: 15px;height: 100%">
+            @foreach (var kwiz in List)
+            {
+                <MudCard Style="height: 200px">
+                    <MudCardMedia Image="images/door.jpg" Height="30" Class="mud-theme-primary" Style="width: 400px" Title="Test"/>
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5">@kwiz.QuizName</MudText>
+                        <MudText Typo="Typo.body2">@kwiz.TopicName</MudText>
+                        <MudText Typo="Typo.body2"></MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        @if (isAllowedToPlay)
+                        {
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick='() => { Navigator.NavigateTo($"/play/{kwiz.Id}"); }'>Jogar</MudButton>
+                        }
+                        else
+                        {
+                            <MudButton Variant="Variant.Text" Color="Color.Default" @onclick='() => { Navigator.NavigateTo($"/login"); }'>Entre como Jogador</MudButton>
+                        }
+                    </MudCardActions>
+                </MudCard>
+            }
+        </div>
+    </MudStack>
+</section>
+
+@code {
+    public IEnumerable<KwizDto> KwizzList { get; set; } = Enumerable.Empty<KwizDto>();
+    public IEnumerable<TopicDto> TopicList { get; set; } = Enumerable.Empty<TopicDto>();
+    public CurrentUser? MyAccount { get; set; }
+
+    string search = "";
+    string currentTopic = "";
+
+    public IEnumerable<KwizDto> List
+    {
+        get
+        {
+            var result = KwizzList;
+            if (!string.IsNullOrEmpty(search))
+            {
+                result = result.Where(r => r.QuizName.Contains(search));
+            }
+
+            if (!string.IsNullOrEmpty(currentTopic))
+            {
+                result = result.Where(r => r.TopicName.Contains(currentTopic));
+            }
+
+            return result;
+        }
+    }
+
+    bool isAllowedToPlay = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var kwizResult = await Kwizzes.GetAll();
+        if (kwizResult is not null && kwizResult.Success)
+            KwizzList = kwizResult.Data ?? Enumerable.Empty<KwizDto>();
+
+        var topicResult = await Topics.GetAll();
+        if (topicResult is not null && topicResult.Success)
+            TopicList = topicResult.Data ?? Enumerable.Empty<TopicDto>();
+
+        MyAccount = await User.GetItemAsync<CurrentUser>("user");
+        if (MyAccount is null || MyAccount.MyAccount?.AccountType != AccountType.Player)
+            isAllowedToPlay = false;
+    }
+
+}

@@ -23,19 +23,19 @@
         </MudPaper>
     </div>
 </menu>
-
 <section id="heroSec">
     <MudPaper Elevation="0" Height="90vh" Class="d-flex justify-center align-center flex-row">
         <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
             <MudText Typo="Typo.h2">Apresentamos-te o KWIZ</MudText>
             <MudText Typo="Typo.subtitle1">A plataforma que vai revolucionar a forma como você aprende se divertindo!!</MudText>
             <MudStack Row="true">
-                <MudButton Style="background-color: #1b6ec2; color: white">Explorar</MudButton>
+                <MudButton Style="background-color: #1b6ec2; color: white" Href="/kwizzes">Explorar</MudButton>
                 <MudButton Style="border: 2px solid #1b6ec2; color: #1b6ec2">Crie seu proprior KWIZ</MudButton>
             </MudStack>
         </MudStack>
     </MudPaper>
 </section>
+<!--
 
 <section id="pointsSection">
     <MudStack Style="height: 20%" Justify="Justify.Center" AlignItems="AlignItems.Center">
@@ -54,31 +54,6 @@
             <MudIcon Icon="@Icons.Material.Rounded.Person2"></MudIcon>
             <MudText>Title</MudText>
         </MudPaper>
-    </MudStack>
-</section>
-
-<section id="kwizHighligh">
-    <MudStack Style="height: 20%" Justify="Justify.Center" AlignItems="AlignItems.Center">
-        <MudText Typo="Typo.h4">Os Melhores KWIZZES</MudText>
-    </MudStack>
-    <MudStack Style="height: 80%">
-        <div class="d-flex flex-row gap-4" style="overflow: auto;padding: 15px;height: 100%">
-            @foreach (var kwiz in KwizzList)
-            {
-                <MudCard>
-                    <MudCardMedia Image="images/door.jpg" Height="200" Style="width: 400px" Title="Test"/>
-                    <MudCardContent>
-                        <MudText Typo="Typo.h5">@kwiz.QuizName</MudText>
-                        <MudText Typo="Typo.body2">@kwiz.TopicName</MudText>
-                        <MudText Typo="Typo.body2"></MudText>
-                    </MudCardContent>
-                    <MudCardActions>
-                        <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick='() => { Navigator.NavigateTo($"/play/{kwiz.Id}"); }'>Jogar</MudButton>
-                        <MudButton Variant="Variant.Text" Color="Color.Primary">Ver Mais</MudButton>
-                    </MudCardActions>
-                </MudCard>
-            }
-        </div>
     </MudStack>
 </section>
 
@@ -145,6 +120,7 @@
         <MudText>2024&COPY; KWIZ</MudText>
     </MudStack>
 </footer>
+-->
 
 @code {
     private MudCarousel<string> _carousel;
@@ -156,17 +132,12 @@
     private int selectedIndex = 2;
 
     public IEnumerable<TopicDto> TopicList { get; set; } = Enumerable.Empty<TopicDto>();
-    public IEnumerable<KwizDto> KwizzList { get; set; } = Enumerable.Empty<KwizDto>();
 
     protected override async Task OnInitializedAsync()
     {
         var topicResult = await Topics.GetAll();
         if (topicResult is not null && topicResult.Success)
             TopicList = topicResult.Data ?? Enumerable.Empty<TopicDto>();
-
-        var kwizResult = await Kwizzes.GetAll();
-        if (kwizResult is not null && kwizResult.Success)
-            KwizzList = kwizResult.Data ?? Enumerable.Empty<KwizDto>();
     }
 
 }
