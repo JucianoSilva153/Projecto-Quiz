@@ -1,0 +1,86 @@
+@page "/login"
+@using Microsoft.AspNetCore.Components
+@using MudBlazor.Extensions
+@using Quiz.Domain.Common.DTOs
+@using Quiz.Infrastructure.Common
+@layout NoLayout
+
+<PageName Title="Iniciar Sesssão"></PageName>
+<section class=" d-flex" style="width: 100%">
+    <MudStack Class="mud-theme-primary" Style="width: 50%"></MudStack>
+    <MudStack Style="width: 50%" Justify="Justify.Center" AlignItems="AlignItems.Center">
+        <MudText Color="Color.Primary" Typo="Typo.h6" Align="Align.Left">Ola, bem vindo de volta!</MudText>
+        <MudForm Style="width: 60%" Class="d-flex flex-column">
+            <MudTextField T="string" Label="Nome de Usuario ou Email"
+                          Required="true"
+                          @bind-Value="EmailOrUser"
+                          RequiredError="Insira seu nome de usuario ou email!"
+                          Adornment="Adornment.End"
+                          AdornmentColor="Color.Primary"
+                          AdornmentIcon="@Icons.Material.Filled.Person2"/>
+            <MudTextField T="string" Label="Password"
+                          InputType="InputType.Password"
+                          @bind-Value="AccessData.Password"
+                          Required="true"
+                          RequiredError="Insira sua palavra passe!"
+                          Adornment="Adornment.End"
+                          AdornmentColor="Color.Primary"
+                          AdornmentIcon="@Icons.Material.Filled.Password"/>
+            <MudText @onclick='() => Navigator.NavigateTo("/signin")' Align="Align.End" Color="Color.Secondary" Typo="Typo.caption" Class="cursor-pointer my-2">Nao tenho uma Conta.</MudText>
+            <MudButton Variant="Variant.Filled" @onclick="ExecuteLogin" Color="Color.Primary" Class="my-5">Entrar</MudButton>
+        </MudForm>
+    </MudStack>
+</section>
+
+@code {
+
+    public LoginDto AccessData { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await User.GetItemAsync<CurrentUser>("user");
+        
+        if (user is not null)
+            Navigator.NavigateTo("/dashboard");
+        
+    }
+
+    public string EmailOrUser
+    {
+        get { return String.IsNullOrEmpty(AccessData.Email) ? AccessData.User : AccessData.Email; }
+        set
+        {
+            if (value.Contains("@"))
+            {
+                AccessData.Email = value;
+                AccessData.User = "";
+            }
+            else
+            {
+                AccessData.User = value;
+                AccessData.Email = "";
+            }
+        }
+    }
+
+    public async void ExecuteLogin()
+    {
+        var result = await Accounts.LoginAsync(AccessData);
+        if (result is null)
+        {
+            await Dialog.ShowInfoDialog("Login", $"Erro ao tentar fazer login");
+        }
+        else
+        {
+            if (result.Status != StatusCodes.Ok)
+            {
+                await Dialog.ShowInfoDialog("Login", result.Message);
+                return;
+            }
+
+            await User.SetItemAsync("user", result.Data);
+            await Dialog.ShowInfoDialog("Login", result.Message, (() => Navigator.NavigateTo(("/dashboard"))));
+        }
+    }
+
+}

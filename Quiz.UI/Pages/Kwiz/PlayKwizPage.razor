@@ -1,0 +1,181 @@
+@layout NoLayout
+@page "/play/{KwizId:guid}"
+
+
+<MudStack Style="height: 100vh" Justify="Justify.Center" AlignItems="AlignItems.Center">
+    @if (isloading)
+    {
+        <MudText>Carregando...</MudText>
+    }
+
+    @if (!isloading && !ready)
+    {
+        <MudStack Style="width: 70%" Justify="Justify.Center" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.subtitle1">@Kwiz.TopicName</MudText>
+            <MudText Typo="Typo.h3" Color="Color.Primary">@Kwiz.QuizName</MudText>
+            <MudText Typo="Typo.caption">Quando estiver pronto clique no botao abaixo!!</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="() => { ready = true; }">
+                Bora lá!!
+            </MudButton>
+        </MudStack>
+    }
+
+    @if (ready && !done)
+    {
+        <MudPaper Width="40%" Height="85vh">
+            <MudStack Style="width: 100%;height: 100%">
+                <MudPaper Elevation="0" Class="mud-theme-primary" Square="true">
+                    <MudText Typo="Typo.caption" Align="Align.Left">
+                        Pergunta @(CurrentIndex + 1)
+                        de @Kwiz.QuestionDtos.Count() - Pontos: @Pontuation.PointValue / @Kwiz.MaxPoint
+                    </MudText>
+                </MudPaper>
+                <MudPaper Height="20%" Class=" mx-5">
+                    <MudStack Justify="Justify.Center" Style="height: 100%">
+                        <MudText Color="Color.Primary" Align="Align.Center">@Question[CurrentIndex].Statement</MudText>
+                    </MudStack>
+                </MudPaper>
+                <MudStack>
+                    <MudRadioGroup @bind-Value="CurrentAnswer" T="AnswerDto" Class="mx-5 gap-4">
+                        @foreach (var answer in Question[CurrentIndex].Answers)
+                        {
+                            <MudPaper Class="my-4 px-4">
+                                <MudRadio Color="Color.Primary" Value="answer">@answer.Text</MudRadio>
+                            </MudPaper>
+                        }
+                    </MudRadioGroup>
+                </MudStack>
+                <MudStack Class=" mx-5">
+                    <MudButton @onclick="NextQuestion" Color="Color.Primary">
+                        Proxima
+                        <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowRight"></MudIcon>
+                    </MudButton>
+                </MudStack>
+            </MudStack>
+        </MudPaper>
+    }
+
+    @if (done)
+    {
+        <MudStack Style="width: 100%;height: 100vh" Justify="Justify.Center" AlignItems="AlignItems.Center">
+            <MudStack Style="width: 50%;height: 90%" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                <MudText Align="Align.Center" Typo="Typo.h5" Color="Color.Primary">@ResumeMessage</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Primary">
+                    Voce obteve uma pontuacao de
+                    <MudText Color="@resumeColor" Typo="Typo.caption">@Pontuation.PointValue</MudText>
+                </MudText>
+                <MudPaper Class="mud-theme-sucess px-5 py-5" Width="60%">
+                    <div class="d-flex flex-1">
+                        0
+                        <MudSpacer ></MudSpacer>
+                        @Kwiz.MaxPoint
+                    </div>
+                    <MudProgressLinear Min="0" Rounded="true" Style="height: 10px;" Max="Kwiz.MaxPoint" Color="Color.Primary" StrokeWidth="2" Value="@Pontuation.PointValue"></MudProgressLinear>
+                </MudPaper>
+                <MudStack Row>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary">Explore KWIZZES</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary">Ver Resultados</MudButton>
+                </MudStack>
+            </MudStack>
+        </MudStack>
+    }
+</MudStack>
+
+@code {
+    [Parameter] public Guid KwizId { get; set; }
+
+    public KwizDto Kwiz { get; set; } = new KwizDto();
+    public PointDto Pontuation { get; set; } = new PointDto();
+    public AnswerDto? CurrentAnswer { get; set; }
+    public List<QuestionDto> Question => Kwiz.QuestionDtos.ToList();
+
+    bool isloading = true;
+    bool ready = false;
+    bool done = false;
+
+    Color resumeColor = Color.Default;
+    string ResumeMessage = "";
+
+    int CurrentIndex = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await User.GetItemAsync<CurrentUser>("user");
+        if (user is null)
+        {
+            await Dialog.ShowInfoDialog("Jogar", "Antes de jogar, precisa estar logado em sua conta!!", () => { Navigator.NavigateTo("/login"); });
+            return;
+        }
+
+        var result = await Kwizzes.GetById(KwizId);
+        if (result is null || !result.Success)
+        {
+            Snackbar.Add("Ocorreu um erro ao tentar carregar o kwiz!!", Severity.Error);
+            return;
+        }
+
+        isloading = false;
+        Kwiz = result.Data ?? new KwizDto();
+
+        Pontuation = new PointDto
+        {
+            UserId = user?.MyAccount?.UserId ?? new Guid(),
+            QuizId = KwizId,
+            PointValue = 0
+        };
+    }
+
+    public async void NextQuestion()
+    {
+        if (CurrentAnswer is null)
+        {
+            Snackbar.Add("Escolha uma resposta por favor", Severity.Info);
+            return;
+        }
+
+        if (CurrentAnswer.IsCorrect)
+        {
+            Snackbar.Add("Resposta correcta!!", Severity.Success);
+            Pontuation.PointValue += (Kwiz.MaxPoint / Kwiz.QuestionDtos.Count());
+        }
+        else
+        {
+            Snackbar.Add("Resposta incorrecta!!", Severity.Error);
+        }
+
+        if (CurrentIndex != (Question.Count - 1))
+        {
+            CurrentIndex++;
+        }
+        else
+        {
+            done = true;
+            double percent = (Convert.ToDouble(Pontuation.PointValue) / Convert.ToDouble(Kwiz.MaxPoint));
+            if (percent >= 0.1 && percent <= 0.4)
+            {
+                resumeColor = Color.Warning;
+                ResumeMessage = "Pontuação muito baixa não?! Mas você superará na próxima!!";
+            }
+            else if (percent >= 0.5 && percent <= 1)
+            {
+                resumeColor = Color.Success;
+                ResumeMessage = "Parabéns!! Continue assim!!";
+            }
+            else if (percent == 0)
+            {
+                resumeColor = Color.Warning;
+                ResumeMessage = "Oops!! Não foi desta, mas você, voltará mais forte!!";
+            }
+
+            if (!(await RegisterPontuation()))
+                Snackbar.Add("Aconteceu um erro inesperado ao tentar registar sua pontuacao!!", Severity.Error);
+        }
+        
+        CurrentAnswer = null;
+    }
+
+    public async Task<bool> RegisterPontuation()
+    {
+        return await Points.CreateAsync(Pontuation);
+    }
+}

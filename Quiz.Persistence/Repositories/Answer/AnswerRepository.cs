@@ -25,7 +25,7 @@ public class AnswerRepository : IAnswer
         throw new NotImplementedException();
     }
 
-    public Task DeleteAsync(Guid id)
+    public Task<bool> DeleteAsync(Guid id)
     {
         throw new NotImplementedException();
     }

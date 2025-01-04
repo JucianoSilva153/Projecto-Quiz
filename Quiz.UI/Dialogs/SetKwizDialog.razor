@@ -1,0 +1,210 @@
+@using Quiz.Domain.Entities.Kwizzes
+<MudDialog>
+    <TitleContent>
+        Novo Kwiz
+    </TitleContent>
+    <DialogContent>
+        <MudStepper CompletedStepColor="Color.Primary">
+            <MudStep Title="Passo 1" SecondaryText="Informações do Kwiz">
+                <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                    <MudForm Style="width: 60%" Class="d-flex flex-column">
+                        <MudTextField T="string" Label="Nome do Kwiz"
+                                      Required="true"
+                                      @bind-Value="@KwizToAdd.QuizName"
+                                      RequiredError="Insira o nome do Kwiz"
+                                      Adornment="Adornment.End"
+                                      Variant="Variant.Outlined"
+                                      AdornmentColor="Color.Primary"
+                                      AdornmentIcon="@Icons.Material.Filled.Quiz"/>
+                        <MudSelect Label="Selecione um Topico"
+                                   @bind-Value="@KwizToAdd.TopicName"
+                                   Required="true"
+                                   Variant="Variant.Outlined"
+                                   RequiredError="Insira sua palavra passe!"
+                                   Adornment="Adornment.End"
+                                   AdornmentColor="Color.Primary"
+                                   AdornmentIcon="@Icons.Material.Filled.Topic">
+                            @foreach (var topic in TopicList)
+                            {
+                                <MudSelectItem Value="topic.TopicName">@topic.TopicName - @topic.TopicDescription</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudTextField T="int" Label="Maxima Pontuacao"
+                                      Required="true"
+                                      @bind-Value="@KwizToAdd.MaxPoint"
+                                      RequiredError="Insira o nome do Kwiz"
+                                      Adornment="Adornment.End"
+                                      Variant="Variant.Outlined"
+                                      AdornmentColor="Color.Primary"
+                                      AdornmentIcon="@Icons.Material.Filled.Numbers"/>
+                    </MudForm>
+                </MudStack>
+            </MudStep>
+            <MudStep Title="Passo 2" SecondaryText="Perguntas e Respostas">
+                <MudStack>
+                    <MudExpansionPanels>
+                        @foreach (var question in KwizToAdd.QuestionDtos)
+                        {
+                            <MudExpansionPanel HideIcon="true">
+                                <TitleContent>
+                                    <div class="d-flex">
+                                        <MudText Typo="Typo.h6" Color="Color.Primary">@question.Statement</MudText>
+                                        <MudIcon Icon="@(open ? Icons.Material.Filled.Close : Icons.Material.Filled.Add)" class="ml-auto"></MudIcon>
+                                    </div>
+                                </TitleContent>
+                                <ChildContent>
+                                    <MudStack>
+                                        @foreach (var answer in question.Answers)
+                                        {
+                                            <MudPaper Elevation="0" Class="d-flex align-center">
+                                                <MudText>@answer.Text</MudText>
+                                                <MudCheckBox @bind-Value="@answer.IsCorrect" Color="Color.Success"></MudCheckBox>
+                                            </MudPaper>
+                                        }
+                                        @if (question.Answers.Count() == 0)
+                                        {
+                                            <MudText Typo="Typo.caption">Sem Respostas</MudText>
+                                        }
+                                        <MudButton @onclick='() => { OpenNewAnswerDialog("Nova Resposta", question.Id, UpdateAnswer); }' Color="Color.Primary" Variant="Variant.Filled">Adicionar Resposta</MudButton>
+                                    </MudStack>
+                                </ChildContent>
+                            </MudExpansionPanel>
+                        }
+                    </MudExpansionPanels>
+                    <MudButton Color="Color.Primary" @onclick='() => { OpenNewQuestionDialog("Nova Pergunta", UpdateQuestion); }'>
+                        <MudIcon Icon="@Icons.Material.Filled.Add"></MudIcon>
+                        Nova Pergunta
+                    </MudButton>
+                </MudStack>
+            </MudStep>
+            <MudStep Title="Passo 3" SecondaryText="Resumo">
+                <MudPaper Class="d-flex justify-center flex-column align-center wrap" Style="border-radius: 15px;" Elevation="4" Height="100px">
+                    <MudText Typo="Typo.h4" Color="Color.Primary">@KwizToAdd.QuizName</MudText>
+                    <MudText Typo="Typo.caption">@KwizToAdd.TopicName</MudText>
+                </MudPaper>
+                <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class=" py-4">
+                    <MudPaper Class="d-flex justify-center align-center" Style="border-radius: 15px;" Elevation="4" Height="80px" Width="300px">
+                        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.caption">Pontos Alcancaveis</MudText>
+                            <MudText Color="Color.Primary" Typo="Typo.h6">@KwizToAdd.MaxPoint</MudText>
+                        </MudStack>
+                    </MudPaper>
+                    <MudPaper Class="d-flex justify-center align-center" Style="border-radius: 15px;" Elevation="4" Height="80px" Width="300px">
+                        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.caption">Total Perguntas</MudText>
+                            <MudText Color="Color.Primary" Typo="Typo.h6">@KwizToAdd.QuestionDtos.Count()</MudText>
+                        </MudStack>
+                    </MudPaper>
+                    <MudPaper Class="d-flex justify-center align-center" Style="border-radius: 15px;" Elevation="4" Height="80px" Width="300px">
+                        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.caption">Total Respostas</MudText>
+                            <MudText Color="Color.Primary" Typo="Typo.h6">@KwizToAdd.QuestionDtos.Sum(q => q.Answers.Count())</MudText>
+                        </MudStack>
+                    </MudPaper>
+                    <MudPaper Class="d-flex justify-center align-center" Style="border-radius: 15px;" Elevation="4" Height="80px" Width="300px">
+                        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.caption">Pontos por Perguntas</MudText>
+                            <MudText Color="Color.Primary" Typo="Typo.h6">@(KwizToAdd.MaxPoint / KwizToAdd.QuestionDtos.Count())</MudText>
+                        </MudStack>
+                    </MudPaper>
+                </MudStack>
+            </MudStep>
+        </MudStepper>
+    </DialogContent>
+    <DialogActions>
+        @if (isLoading)
+        {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Small"></MudProgressCircular>
+        }
+        else
+        {
+        <MudButton Color="Color.Primary" OnClick="Submit">Criar Kwiz</MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
+    [Parameter] public Action OnSaveButtonClicked { get; set; }
+    [Parameter] public Guid userId { get; set; }
+
+    bool open;
+
+    public KwizDto KwizToAdd { get; set; } = new KwizDto();
+    public IEnumerable<TopicDto> TopicList { get; set; } = Enumerable.Empty<TopicDto>();
+    bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var apiResult = await Topics.GetAll();
+        if (apiResult is not null && apiResult.Success)
+            TopicList = apiResult.Data ?? [];
+    }
+
+    public async void OpenNewQuestionDialog(string titulo, Action<string> action)
+    {
+        await Dialog.ShowNewQuestionDialog(titulo, action);
+    }
+
+    public async void OpenNewAnswerDialog(string titulo, Guid questionId, Action<string, Guid> action)
+    {
+        await Dialog.ShowNewAnswerDialog(titulo, questionId, action);
+    }
+
+    public void UpdateQuestion(string question)
+    {
+        KwizToAdd.QuestionDtos = KwizToAdd.QuestionDtos.Append(new QuestionDto
+        {
+            Statement = question,
+            QuizId = KwizToAdd.Id
+        });
+        StateHasChanged();
+    }
+
+    public void UpdateAnswer(string answer, Guid questionId)
+    {
+        // Converte para lista para uso de FindIndex
+        var questionList = KwizToAdd.QuestionDtos.ToList();
+        var questionIndex = questionList.FindIndex(q => q.Id == questionId);
+
+        if (questionIndex >= 0)
+        {
+            var question = questionList[questionIndex];
+
+            // Adiciona uma nova resposta se não existir
+            question.Answers = question.Answers.Append(new AnswerDto
+            {
+                Text = answer,
+                QuestionId = questionId
+            }).ToList();
+
+            // Atualiza o objeto na lista
+            questionList[questionIndex] = question;
+
+            // Atualiza a coleção original com a lista modificada
+            KwizToAdd.QuestionDtos = questionList;
+
+            // Atualiza o estado do componente
+            StateHasChanged();
+        }
+    }
+
+
+    private async void Submit()
+    {
+        KwizToAdd.UserId = userId;
+        var result = await Kwizzes.CreateAsync(KwizToAdd);
+        if (!result)
+        {
+            Snackbar.Add("Ocorreu um erro ao tentar criar o kwiz", Severity.Error);
+            isLoading = false;
+            return;
+        }
+
+        Snackbar.Add("Kwiz Criado com Sucesso!!", Severity.Success);
+        
+        OnSaveButtonClicked.Invoke();
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+}

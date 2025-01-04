@@ -1,14 +1,109 @@
+@using Quiz.Domain.Common.Enum
 @inherits LayoutComponentBase
 
 
-<MudThemeProvider/>
+<MudThemeProvider Theme="Tema.Theme"/>
 <MudPopoverProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
 
 
 <MudLayout>
-    <MudMainContent>
-        @Body
+    <MudAppBar Elevation="0" Class="d-flex">
+
+        <MudText Class="flex-1" Typo="Typo.h6" Color="Color.Primary">
+            <SectionOutlet SectionName="pageTitle"></SectionOutlet>
+        </MudText>
+        <MudButton @onclick="Logout">
+            <MudIcon Size="Size.Medium" Color="Color.Default" Icon="@Icons.Material.Filled.Logout"></MudIcon>
+        </MudButton>
+    </MudAppBar>
+    <MudDrawer Open="true">
+        <MudDrawerHeader >
+            <div style="width: 100%; height: 100%">
+                <MudStack Style="height: 25vh;width: 100%" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                    <MudAvatar Style="height:70px; width:70px; font-size:2rem;" Color="Color.Primary">
+                        <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.Person"></MudIcon>
+                    </MudAvatar>
+                    <MudText Typo="Typo.subtitle1">@DisplayUserName</MudText>
+                    <MudText Typo="Typo.caption">@(MyAccount.MyAccount?.AccountType.ToFriendlyString() ?? "Carregando...")</MudText>
+                </MudStack>
+                <MudDivider Light="true"></MudDivider>
+            </div>
+        </MudDrawerHeader>
+        <MudDrawerContainer Style="overflow: auto; height: 75vh">
+            <MudNavMenu >
+                @if (MyAccount.MyAccount?.AccountType == AccountType.Player)
+                {
+                    <MudNavLink Style="@($"color:{Colors.Blue.Lighten1};")" Match="NavLinkMatch.All" Href="/dashboard/points" IconColor="@Color.Primary" Icon="@Icons.Material.Filled.ListAlt">Pontos</MudNavLink>
+                }
+
+                @if (MyAccount.MyAccount?.AccountType == AccountType.Admin || MyAccount.MyAccount?.AccountType == AccountType.Creator)
+                {
+                    <MudNavGroup Style="@($"color:{Colors.Blue.Lighten1};")" IconColor="@Color.Primary" Title="KWIZES" Icon="@Icons.Material.Filled.Quiz">
+                        @if (MyAccount.MyAccount?.AccountType == AccountType.Player)
+                        {
+                            <MudNavLink Match="NavLinkMatch.All" Href="/dashboard/points" IconColor="@Color.Primary" Icon="@Icons.Material.Filled.ListAlt">Pontos</MudNavLink>
+                        }
+                        <MudNavLink Match="NavLinkMatch.All" Href="/dashboard/kwizzes" IconColor="@Color.Primary" Icon="@Icons.Material.Filled.ManageSearch">Gerir</MudNavLink>
+                        <MudNavLink Match="NavLinkMatch.All" Href="/dashboard/topics" IconColor="@Color.Primary" Icon="@Icons.Material.Filled.Category">Topicos</MudNavLink>
+                    </MudNavGroup>
+                }
+
+                @if (MyAccount.MyAccount?.AccountType == AccountType.Admin)
+                {
+                    <MudNavGroup Style="@($"color:{Colors.Blue.Lighten1};")" IconColor="@Color.Primary" Title="Utilizadores" Icon="@Icons.Material.Filled.ManageAccounts">
+                        <MudNavLink Match="NavLinkMatch.All" Href="dashboard/admins" IconColor="@Color.Primary" Icon="@Icons.Material.Filled.Groups2">Administradores</MudNavLink>
+                        <MudNavLink Match="NavLinkMatch.All" Href="dashboard/creators" IconColor="@Color.Primary" Icon="@Icons.Material.Filled.Create">Criadores</MudNavLink>
+                        <MudNavLink Match="NavLinkMatch.All" Href="dashboard/players" IconColor="@Color.Primary" Icon="@Icons.Material.Filled.Games">Jogadores</MudNavLink>
+                    </MudNavGroup>
+                }
+                <MudNavGroup Style="@($"color:{Colors.Blue.Lighten1};")" IconColor="@Color.Primary" Title="Configurações" Icon="@Icons.Material.Filled.Settings">
+                    <MudNavLink Match="NavLinkMatch.All" IconColor="@Color.Primary" Icon="@Icons.Material.Filled.AccountCircle">Conta</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" IconColor="@Color.Primary" Icon="@Icons.Material.Filled.LibraryBooks">Preferencias</MudNavLink>
+                </MudNavGroup>
+            </MudNavMenu>
+        </MudDrawerContainer>
+    </MudDrawer>
+    <MudMainContent Class="p-4 rounded-t-lg">
+        <CascadingValue Value="MyAccount">
+            @Body
+        </CascadingValue>
     </MudMainContent>
 </MudLayout>
+
+@code
+{
+
+    public CurrentUser MyAccount { get; set; } = new CurrentUser();
+
+    public string DisplayUserName => string.IsNullOrEmpty(MyAccount.MyAccount?.FullName.Trim())
+        ? "@" + MyAccount.MyAccount?.User ?? ""
+        : MyAccount.MyAccount?.FullName ?? "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await User.GetItemAsync<CurrentUser>("user");
+        if (user is null)
+            Navigator.NavigateTo("/login");
+
+        var currentAccount = await Accounts.RefreshLocalData(new LoginDto
+        {
+            User = user.MyAccount.User,
+            Email = user.MyAccount.Email,
+            Password = user.MyAccount.Password
+        });
+        if (currentAccount is null)
+            Navigator.NavigateTo("/login");
+
+        await User.SetItemAsync<CurrentUser>("user", currentAccount);
+
+        MyAccount = user ?? new();
+    }
+
+    private async void Logout()
+    {
+        await User.SetItemAsync<CurrentUser>("user", null);
+        Navigator.NavigateTo("/");
+    }
+}

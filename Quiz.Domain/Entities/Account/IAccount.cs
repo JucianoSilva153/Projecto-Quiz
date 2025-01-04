@@ -5,4 +5,5 @@ namespace Quiz.Domain.Entities.Accounts;
 
 public interface IAccount : IRepository<Account, AccountDto>
 {
+    public Task<CurrentUser?> LoginAsync(LoginDto entity);
 }

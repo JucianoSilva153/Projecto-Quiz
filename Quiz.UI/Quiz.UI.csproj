@@ -3,13 +3,20 @@
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
+        <SelfContained>true</SelfContained>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.7" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.7" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="MudBlazor" Version="7.15.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
     <ItemGroup>
@@ -20,7 +27,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Pages\Dashboard\Modules\" />
+      <Folder Include="Pages\Dashboard\Answers\" />
+      <Folder Include="Pages\Dashboard\Modals\" />
+      <Folder Include="Pages\Dashboard\Questions\" />
+      <Folder Include="wwwroot\assets\images\" />
     </ItemGroup>
 
 </Project>

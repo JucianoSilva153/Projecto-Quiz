@@ -14,5 +14,5 @@ public class Point : Entity
     public User User { get; set; }
     
     public Guid QuizId { get; set; }
-    public Kwiz Kwiz { get; set; }
+    public Kwiz Quiz { get; set; }
 }

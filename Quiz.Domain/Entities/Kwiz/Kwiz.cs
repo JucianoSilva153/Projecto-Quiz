@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Quiz.Domain.Common;
+using Quiz.Domain.Entities.Points;
 using Quiz.Domain.Entities.Questions;
 using Quiz.Domain.Entities.Topics;
 using Quiz.Domain.Entities.Users;
@@ -20,5 +21,7 @@ public class Kwiz : Entity
     public Guid UserId { get; set; }
     public User User { get; set; }
 
+    
+    public ICollection<Point> Points { get; set; }
     public ICollection<Question> Questions { get; set; }
 }

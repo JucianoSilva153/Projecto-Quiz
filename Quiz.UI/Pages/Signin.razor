@@ -1,0 +1,95 @@
+@page "/signin"
+@using Quiz.Domain.Common.DTOs
+@using Quiz.UI.Dialogs
+@inject IDialogService DialogService
+@layout NoLayout
+
+<PageName Title="Cadastre-se"></PageName>
+
+<section class=" d-flex" style="width: 100%">
+    <MudStack Style="width: 50%" Justify="Justify.Center" AlignItems="AlignItems.Center">
+        <MudText Color="Color.Primary" Typo="Typo.h6" Align="Align.Left">Cadastro</MudText>
+
+        <MudForm @ref="form" Style="width: 60%" Class="d-flex flex-column">
+            <MudTextField T="string" Label="Email"
+                          @bind-Value="Account.Email"
+                          Required="true"
+                          InputType="InputType.Email"
+                          RequiredError="Insira seu email!"
+                          Adornment="Adornment.End"
+                          AdornmentColor="Color.Primary"
+                          AdornmentIcon="@Icons.Material.Filled.Mail"/>
+            <MudTextField T="string" Label="Nome de Usuario"
+                          @bind-Value="Account.User"
+                          Required="true"
+                          RequiredError="Insira seu nome de usuario!"
+                          Adornment="Adornment.End"
+                          AdornmentColor="Color.Primary"
+                          AdornmentIcon="@Icons.Material.Filled.Person2"/>
+            <MudTextField T="string" Label="Password"
+                          @bind-Value="Account.Password"
+                          InputType="InputType.Password"
+                          Required="true"
+                          RequiredError="Insira sua palavra passe!"
+                          Adornment="Adornment.End"
+                          AdornmentColor="Color.Primary"
+                          AdornmentIcon="@Icons.Material.Filled.Password"/>
+            <MudTextField T="string" Label="Repita a Palavrapasse"
+                          @bind-Value="TestePassword"
+                          InputType="InputType.Password"
+                          Required="true"
+                          RequiredError="Repita a palavra que inseriu!!"
+                          Adornment="Adornment.End"
+                          AdornmentColor="Color.Primary"
+                          AdornmentIcon="@Icons.Material.Filled.Password"/>
+            <MudText @onclick='() => Navigator.NavigateTo("/login")'
+                     Align="Align.End" Color="Color.Secondary"
+                     Typo="Typo.caption" Class="cursor-pointer my-2">
+                Ja possuo uma Conta.
+            </MudText>
+            <MudButton Variant="Variant.Filled" @onclick="Create" Color="Color.Primary" Class="my-5">Entrar</MudButton>
+        </MudForm>
+    </MudStack>
+    <MudStack Class="mud-theme-primary" Style="width: 50%"></MudStack>
+</section>
+
+
+@code {
+    public AccountDto Account { get; set; } = new();
+    public string TestePassword = "";
+    MudForm form;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await User.GetItemAsync<CurrentUser>("user");
+        
+        if (user is not null)
+            Navigator.NavigateTo("/dashboard");
+    }
+
+    public async Task Create()
+    {
+        await form.Validate();
+        
+        
+        if(!form.IsValid)
+            return;
+            
+        if (Account is { Email: "", FullName: "" })
+        {
+            Dialog.ShowInfoDialog("Cadastro", "Email nao pode estar nulo");
+            return;
+        }
+
+        var sucess = await Accounts.CreateAsync(Account);
+        if (!sucess)
+        {
+            Dialog.ShowInfoDialog("Cadastro", "Erro ao criar Conta!");
+            return;
+        }
+
+        Dialog.ShowInfoDialog("Cadastro", "Conta Criada Com Sucesso!");
+    }
+
+
+}

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Quiz.Domain.Common;
 using Quiz.Domain.Entities.Accounts;
 using Quiz.Domain.Entities.Kwizzes;
@@ -7,9 +8,10 @@ namespace Quiz.Domain.Entities.Users;
 
 public class User : Entity
 {
-    public string Name { get; set; }
-    public string Surname { get; set; }
+    public string? Name { get; set; }
+    public string? Surname { get; set; }
 
+    [Required]
     public Guid AccountId { get; set; }
     public Account Account { get; set; }
 

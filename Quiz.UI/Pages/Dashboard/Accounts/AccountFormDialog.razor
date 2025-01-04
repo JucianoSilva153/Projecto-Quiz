@@ -1,0 +1,105 @@
+@using Quiz.Infrastructure.Common
+<MudDialog Style="width: 50%">
+    <TitleContent>
+        @(Mode == DialogFormMode.Add ? "Nova Conta" : "Editando Conta")
+        - @Type.ToFriendlyString()
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" Class="d-flex flex-column">
+            <MudTextField T="string" Label="Email"
+                          @bind-Value="Data.Email"
+                          Required="true"
+
+                          InputType="InputType.Email"
+                          RequiredError="Insira seu email!"
+                          Adornment="Adornment.End"
+                          AdornmentColor="Color.Primary"
+                          AdornmentIcon="@Icons.Material.Filled.Mail"/>
+            <MudTextField T="string" Label="Nome de Usuario"
+                          @bind-Value="Data.User"
+                          Required="true"
+                          RequiredError="Insira seu nome de usuario!"
+                          Adornment="Adornment.End"
+                          AdornmentColor="Color.Primary"
+                          AdornmentIcon="@Icons.Material.Filled.Person2"/>
+            <MudStack Row>
+                <MudTextField T="string" Label="Primeiro nome"
+                              @bind-Value="@Nome"
+                              InputType="InputType.Text"
+                              RequiredError="Seu Primeiro nome"
+                              Adornment="Adornment.End"
+                              AdornmentColor="Color.Primary"
+                              AdornmentIcon="@Icons.Material.Filled.Person4"/>
+                <MudTextField T="string" Label="Sobrenome"
+                              @bind-Value="Sobrenome"
+                              InputType="InputType.Text"
+                              RequiredError="Seu sobrenome"
+                              Adornment="Adornment.End"
+                              AdornmentColor="Color.Primary"
+                              AdornmentIcon="@Icons.Material.Filled.Person4"/>
+            </MudStack>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        @if (isLoading)
+        {
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Small"></MudProgressCircular>
+        }
+        else
+        {
+            <MudButton Color="Color.Primary" OnClick="Submit">@(Mode == DialogFormMode.Add ? "Criar nova conta" : "Salvar alteracoes")</MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] private CurrentUser user { get; set; }
+    [Parameter] public Action? OnSaveButtonClicked { get; set; }
+
+    [Parameter] public AccountDto Data { get; set; } = new AccountDto();
+    [Parameter] public DialogFormMode Mode { get; set; }
+    [Parameter] public AccountType Type { get; set; }
+
+    public string Nome = "";
+    public string Sobrenome = "";
+    MudForm form;
+
+    bool isLoading = false;
+
+    private async void Submit()
+    {
+        isLoading = true;
+        await form.Validate();
+
+        if (!form.IsValid)
+        {
+            Snackbar.Add("Por favor, preencha todos os campos correctamente!!", Severity.Error);
+            isLoading = false;
+            return;
+        }
+
+        if (Mode == DialogFormMode.Add)
+        {
+            Data.AccountType = Type;
+            var result = await Accounts.CreateAsync(Data);
+
+            if (!result)
+            {
+                Snackbar.Add("Ocorreu um erro ao tentar criar a conta", Severity.Error);
+                isLoading = false;
+                return;
+            }
+
+            Snackbar.Add("Conta Criada com Sucesso!!", Severity.Success);
+        }
+        else
+        {
+        }
+
+        if (OnSaveButtonClicked is not null)
+            OnSaveButtonClicked.Invoke();
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+}

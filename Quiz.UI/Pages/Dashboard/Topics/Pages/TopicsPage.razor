@@ -1,0 +1,64 @@
+@page "/dashboard/topics"
+@using Quiz.Infrastructure.Common
+@layout DashboardLayout
+
+<PageName Title="Gestao de Topicos"></PageName>
+
+<MudContainer Class="py-8">
+    <MudDataGrid T="TopicDto" Items="TopicList" Hover="true">
+        <ToolBarContent>
+            <MudButton @onclick='() => { OpenNewTopicDialog(DialogFormMode.Add); }' Color="Color.Primary" Variant="Variant.Filled">
+                <MudIcon Icon="@Icons.Material.Filled.Add"></MudIcon>
+                Novo Topico
+            </MudButton>
+            <MudSpacer/>
+            <MudTextField Placeholder="Pesquisar KWIZ" Adornment="Adornment.Start" Immediate="true"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+            </MudTextField>
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Property="a => a.TopicName" Title="Nome"></PropertyColumn>
+            <PropertyColumn Property="a => a.TopicDescription" Title="Descricao"></PropertyColumn>
+            <PropertyColumn Property="a => a.TopicQuizzes" Title="Total de Kwizzes"></PropertyColumn>
+            <TemplateColumn>
+                <CellTemplate>
+                    <MudStack Row>
+                        <MudIconButton Size="Size.Small" Color="Color.Primary" Icon="@Icons.Material.Filled.Visibility"></MudIconButton>
+                        <MudIconButton Size="Size.Small" Color="Color.Info" Icon="@Icons.Material.Filled.Edit" @onclick='() => { OpenNewTopicDialog(DialogFormMode.Edit, context.Item); }'></MudIconButton>
+                        <MudIconButton Size="Size.Small" Color="Color.Error" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+</MudContainer>
+
+@code {
+    [CascadingParameter] public CurrentUser user { get; set; } = new CurrentUser();
+
+    public IEnumerable<TopicDto> _topics { get; set; } = Enumerable.Empty<TopicDto>();
+
+    public IEnumerable<TopicDto> TopicList
+    {
+        get { return _topics.Where(a => a.UserId == user.MyAccount!.UserId); }
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadTopic();
+    }
+
+    public async void LoadTopic()
+    {
+        var result = await Topics.GetAll();
+        if (result is not null && result.Success)
+            _topics = result.Data!;
+        StateHasChanged();
+    }
+
+    public async void OpenNewTopicDialog(DialogFormMode mode, TopicDto? topic = null)
+    {
+        await Dialog.ShowNewTopicDialog(mode, user.MyAccount.UserId, null, LoadTopic);
+    }
+
+}

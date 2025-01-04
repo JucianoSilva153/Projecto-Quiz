@@ -1,0 +1,37 @@
+<MudDialog>
+    <TitleContent>
+        @Title
+    </TitleContent>
+    <DialogContent>
+        <MudTextField T="string" Label="Valor"
+                      Required="true"
+                      @bind-Value="Text"
+                      RequiredError="Insira o Valor"
+                      Adornment="Adornment.End"
+                      Variant="Variant.Outlined"
+                      AdornmentColor="Color.Primary"
+                      AdornmentIcon="@Icons.Material.Filled.TextFields"/>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
+    [Parameter] public Action<string, Guid> OnOkButtonClicked { get; set; }
+
+
+    [Parameter] public string Title { get; set; }
+    [Parameter] public Guid QuestionId { get; set; }
+    public string Text { get; set; } = "";
+
+    private void Submit()
+    {
+        if(string.IsNullOrEmpty(Text))
+            return;
+        OnOkButtonClicked.Invoke(Text, QuestionId);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+}

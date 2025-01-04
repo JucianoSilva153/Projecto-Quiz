@@ -1,0 +1,62 @@
+@page "/dashboard/admins"
+@using Quiz.Infrastructure.Common
+@layout DashboardLayout
+
+<PageName Title="Gestao de Administradores"></PageName>
+
+<MudContainer Class="py-8">
+    <MudDataGrid Items="AccountList" Hover="true">
+        <ToolBarContent>
+            <MudButton @onclick="() => { OpenAccountForm(DialogFormMode.Add); }" Color="Color.Primary" Variant="Variant.Filled">
+                <MudIcon Icon="@Icons.Material.Filled.Add"></MudIcon>
+                Novo Administrador
+            </MudButton>
+            <MudSpacer/>
+            <MudTextField Placeholder="Pesquisar administrador" Adornment="Adornment.Start" Immediate="true"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+            </MudTextField>
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Property="a => a.FullName" Title="Nome Completo"></PropertyColumn>
+            <PropertyColumn Property="a => a.User" Title="Nome de Usuario"></PropertyColumn>
+            <PropertyColumn Property="a => a.Email" Title="Email"></PropertyColumn>
+            <TemplateColumn>
+                <CellTemplate>
+                    <MudStack Row>
+                        <MudIconButton Size="Size.Small" Color="Color.Primary" Icon="@Icons.Material.Filled.Visibility"></MudIconButton>
+                        <MudIconButton Size="Size.Small" Color="Color.Info" Icon="@Icons.Material.Filled.Edit" @onclick="() => { OpenAccountForm(DialogFormMode.Edit, context.Item); }"></MudIconButton>
+                        <MudIconButton Size="Size.Small" Color="Color.Error" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+</MudContainer>
+
+@code {
+    public IEnumerable<AccountDto> _accounts { get; set; } = Enumerable.Empty<AccountDto>();
+
+    public IEnumerable<AccountDto> AccountList
+    {
+        get { return _accounts.Where(a => a.AccountType == AccountType.Admin); }
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadAccount();
+    }
+
+    public async void LoadAccount()
+    {
+        var result = await Accounts.GetAll();
+        if (result is not null && result.Success)
+            _accounts = result.Data!;
+        StateHasChanged();
+    }
+
+    public async void OpenAccountForm(DialogFormMode mode, AccountDto? accountDto = null)
+    {
+        await Dialog.ShowAccountForm(mode, AccountType.Admin, accountDto, LoadAccount);
+    }
+
+}

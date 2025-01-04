@@ -1,23 +1,54 @@
+using Microsoft.EntityFrameworkCore;
 using Quiz.Domain.Common.DTOs;
+using Quiz.Domain.Entities.Accounts;
 using Quiz.Domain.Entities.Questions;
+using Quiz.Persistence.Context;
 
 namespace Quiz.Persistence.Repositories;
 
 public class QuestionRepository : IQuestion
 {
-    public Task<bool> CreateAsync(Question entity)
+    private readonly AppDbContext _dbContext;
+
+    public QuestionRepository(AppDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
     }
 
-    public Task<QuestionDto> GetByIdAsync(Guid id)
+    public async Task<bool> CreateAsync(Question entity)
     {
-        throw new NotImplementedException();
+        await _dbContext.Questions.AddAsync(entity);
+        var result = await _dbContext.SaveChangesAsync();
+        if (result <= 0)
+            return false;
+        return true;
     }
 
-    public Task<IEnumerable<QuestionDto>> GetAllAsync()
+    public async Task<QuestionDto?> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Questions.Select(q => new QuestionDto
+        {
+            Id = q.Id,
+            Statement = q.Statement,
+            QuizId = q.QuizId
+        }).FirstOrDefaultAsync();
+    }
+
+    public async Task<IEnumerable<QuestionDto>> GetAllAsync()
+    {
+        return await _dbContext.Questions.Select(q => new QuestionDto
+        {
+            Id = q.Id,
+            Statement = q.Statement,
+            QuizId = q.QuizId,
+            Answers = q.Answers.Select(a => new AnswerDto
+            {
+                Id = a.Id,
+                QuestionId = q.Id,
+                IsCorrect = a.IsCorrect,
+                Text = a.Text
+            }).ToList()
+        }).ToListAsync();
     }
 
     public Task<bool> UpdateAsync(Question entity)
@@ -25,7 +56,7 @@ public class QuestionRepository : IQuestion
         throw new NotImplementedException();
     }
 
-    public Task DeleteAsync(Guid id)
+    public Task<bool> DeleteAsync(Guid id)
     {
         throw new NotImplementedException();
     }

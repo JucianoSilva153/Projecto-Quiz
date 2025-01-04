@@ -1,0 +1,21 @@
+@page "/dashboard"
+@layout DashboardLayout
+
+<PageName Title="Dashboard"></PageName>
+
+@if (user.MyAccount?.AccountType == AccountType.Admin)
+{
+    <AdminDashboard user="user"></AdminDashboard>
+}
+else if (user.MyAccount?.AccountType == AccountType.Creator)
+{
+    <CreatorDashboard></CreatorDashboard>
+}
+else if (user.MyAccount?.AccountType == AccountType.Player)
+{
+    <PlayerDashboard></PlayerDashboard>
+}
+
+@code {
+    [CascadingParameter] public CurrentUser user { get; set; } = new CurrentUser();
+}

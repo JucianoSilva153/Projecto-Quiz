@@ -1,0 +1,63 @@
+@page "/dashboard/kwizzes"
+@layout DashboardLayout
+
+<PageName Title="Gestao de KWIZZES"></PageName>
+
+<MudContainer Class="py-8">
+    <MudDataGrid Items="KwizList" Hover="true">
+        <ToolBarContent>
+            <MudButton @onclick="OpenSetUpKwizDialog" Color="Color.Primary" Variant="Variant.Filled">
+                <MudIcon Icon="@Icons.Material.Filled.Add"></MudIcon>
+                Novo KWIZZ
+            </MudButton>
+            <MudSpacer/>
+            <MudTextField Placeholder="Pesquisar KWIZ" Adornment="Adornment.Start" Immediate="true"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+            </MudTextField>
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Property="a => a.OwnerName" Title="Criado Por"></PropertyColumn>
+            <PropertyColumn Property="a => a.QuizName" Title="Titulo"></PropertyColumn>
+            <PropertyColumn Property="a => a.TopicName" Title="Topico"></PropertyColumn>
+            <TemplateColumn>
+                <CellTemplate>
+                    <MudStack Row>
+                        <MudIconButton Size="Size.Small" Color="Color.Primary" Icon="@Icons.Material.Filled.Visibility"></MudIconButton>
+                        <MudIconButton Size="Size.Small" Color="Color.Info" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
+                        <MudIconButton Size="Size.Small" Color="Color.Error" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+</MudContainer>
+
+@code {
+    [CascadingParameter] public CurrentUser user { get; set; } = new CurrentUser();
+
+    public IEnumerable<KwizDto> _kwizzes { get; set; } = Enumerable.Empty<KwizDto>();
+
+    public IEnumerable<KwizDto> KwizList
+    {
+        get => _kwizzes.Where(k => k.UserId == user.MyAccount?.UserId);
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadKwiz();
+    }
+
+    public async void LoadKwiz()
+    {
+        var result = await Kwizzes.GetAll();
+        if (result is not null && result.Success)
+            _kwizzes = result.Data!;
+        StateHasChanged();
+    }
+
+    public async void OpenSetUpKwizDialog()
+    {
+        await Dialog.ShowSetUpKwizDialog(user.MyAccount.UserId, LoadKwiz);
+    }
+
+}

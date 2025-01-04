@@ -1,0 +1,54 @@
+@page "/dashboard/points"
+@layout DashboardLayout
+
+<PageName Title="Pontuações"></PageName>
+
+<MudContainer Class="py-8">
+    <MudDataGrid Items="PointsList" Hover="true">
+        <ToolBarContent>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled">
+                <MudIcon Icon="@Icons.Material.Filled.Add"></MudIcon>
+                Explorar
+            </MudButton>
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Property="a => a.QuizName" Title="Quiz"></PropertyColumn>
+            <PropertyColumn Property="a => a.PointValue" Title="Pontuação"></PropertyColumn>
+            <PropertyColumn Property="a => a.PlayedAt" Title="Data do Jogo"></PropertyColumn>
+            <TemplateColumn>
+                <CellTemplate>
+                    <MudStack Row>
+                        <MudIconButton Size="Size.Small" Color="Color.Primary" Icon="@Icons.Material.Filled.Visibility"></MudIconButton>
+                        <MudIconButton Size="Size.Small" Color="Color.Info" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
+                        <MudIconButton Size="Size.Small" Color="Color.Error" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+</MudContainer>
+
+@code
+{
+    [CascadingParameter] public CurrentUser user { get; set; } = new CurrentUser();
+
+    public IEnumerable<PointDto> _points { get; set; } = Enumerable.Empty<PointDto>();
+
+    public IEnumerable<PointDto> PointsList
+    {
+        get => _points.Where(p => p.UserId == user.MyAccount?.UserId);
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadPontuation();
+    }
+
+    public async void LoadPontuation()
+    {
+        var result = await Points.GetAll();
+        if (result is not null && result.Success)
+            _points = result.Data!;
+        StateHasChanged();
+    }
+}

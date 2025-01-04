@@ -1,23 +1,45 @@
+using Microsoft.EntityFrameworkCore;
 using Quiz.Domain.Common.DTOs;
 using Quiz.Domain.Entities.Points;
+using Quiz.Persistence.Context;
 
 namespace Quiz.Persistence.Repositories;
 
 public class PointRepository : IPoint
 {
-    public Task<bool> CreateAsync(Point entity)
+    private AppDbContext _dbContext;
+
+    public PointRepository(AppDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
     }
 
-    public Task<PointDto> GetByIdAsync(Guid id)
+    public async Task<bool> CreateAsync(Point entity)
     {
-        throw new NotImplementedException();
+        await _dbContext.Points.AddAsync(entity);
+        var result = await _dbContext.SaveChangesAsync();
+
+        if (result <= 0)
+            return false;
+        return true;
     }
 
-    public Task<IEnumerable<PointDto>> GetAllAsync()
+    public async Task<PointDto?> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        return (await GetAllAsync()).FirstOrDefault(p => p.Id == id);
+    }
+
+    public async Task<IEnumerable<PointDto>> GetAllAsync()
+    {
+        return await _dbContext.Points.Include(u => u.Quiz).Select(p => new PointDto
+        {
+            Id = p.Id,
+            UserId = p.UserId,
+            PointValue = p.Value,
+            QuizName = p.Quiz.Name,
+            PlayedAt = p.CreatedAt,
+            QuizId = p.QuizId
+        }).ToListAsync();
     }
 
     public Task<bool> UpdateAsync(Point entity)
@@ -25,7 +47,7 @@ public class PointRepository : IPoint
         throw new NotImplementedException();
     }
 
-    public Task DeleteAsync(Guid id)
+    public Task<bool> DeleteAsync(Guid id)
     {
         throw new NotImplementedException();
     }

@@ -19,10 +19,8 @@ public static class DependencyInjection
         
         services.AddDbContext<AppDbContext>(
             options => options.UseMySql(
-                "server=localhost;database=kwiz;uid=root;",
-                ServerVersion.Parse("10.4.32")),
-            contextLifetime: ServiceLifetime.Transient,
-            optionsLifetime: ServiceLifetime.Singleton);
+                "server=localhost;database=kwiz;uid=root;pwd=12345678",
+                ServerVersion.Parse("10.4.32")));
         
         services.AddTransient<IUser, UserRepository>();
         services.AddTransient<IAccount, AccountRepository>();

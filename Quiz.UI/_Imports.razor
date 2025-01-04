@@ -1,11 +1,33 @@
 ﻿@using System.Net.Http
 @using System.Net.Http.Json
+@using Blazored.LocalStorage
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Sections
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.AspNetCore.Components.WebAssembly.Http
 @using Microsoft.JSInterop
 @using Quiz.UI
+@using Quiz.UI.Pages.Components
 @using Quiz.UI.Layout
 @using MudBlazor
+@using Quiz.Domain.Common.DTOs
+@using Quiz.Domain.Entities.Accounts
+@using Quiz.UI.Services
+@using Quiz.UI.Services.ApiService
+@using Quiz.UI.Theme
+@using Quiz.Domain.Common.Enum
+@using Quiz.UI.Pages.Dashboard.Users
+
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigator
+@inject QuizTheme Tema
+@inject DialogsService Dialog
+
+@inject AccountDataAcess Accounts
+@inject TopicDataAcess Topics
+@inject KwizDataAcess Kwizzes
+@inject PointDataAcess Points
+
+@inject ILocalStorageService User

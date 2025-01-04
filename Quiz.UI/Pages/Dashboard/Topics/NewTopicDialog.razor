@@ -1,0 +1,81 @@
+@using Quiz.Infrastructure.Common
+<MudDialog>
+    <TitleContent>
+        @(Mode == DialogFormMode.Add ? "Novo Topico" : "Editando Topico")
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form">
+            <MudTextField T="string" Label="Topico"
+                          Required="true"
+                          @bind-Value="Topic.TopicName"
+                          RequiredError="Insira o nome do topico"
+                          Adornment="Adornment.End"
+                          Variant="Variant.Outlined"
+                          AdornmentColor="Color.Primary"
+                          AdornmentIcon="@Icons.Material.Filled.TextFields"/>
+            <MudTextField T="string" Label="Descricao"
+                          Required="true"
+                          @bind-Value="Topic.TopicDescription"
+                          RequiredError="Insira uma breve descricao"
+                          Adornment="Adornment.End"
+                          Variant="Variant.Outlined"
+                          AdornmentColor="Color.Primary"
+                          AdornmentIcon="@Icons.Material.Filled.TextFields"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        @if (isLoading)
+        {
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Small"></MudProgressCircular>
+        }
+        else
+        {
+            <MudButton Color="Color.Primary" OnClick="Submit">@(Mode == DialogFormMode.Add ? "Criar novo topico" : "Salvar alteracoes")</MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
+    MudForm form;
+    bool isLoading = false;
+
+
+    [Parameter] public Action? OnOkButtonClicked { get; set; }
+    [Parameter] public DialogFormMode Mode { get; set; }
+    [Parameter] public Guid UserId { get; set; }
+    [Parameter] public TopicDto Topic { get; set; } = new TopicDto();
+
+    private async void Submit()
+    {
+        isLoading = true;
+        await form.Validate();
+
+        if (!form.IsValid)
+        {
+            Snackbar.Add("Por favor, preencha todos os campos correctamente!!", Severity.Error);
+            isLoading = false;
+            return;
+        }
+
+        if (Mode == DialogFormMode.Add)
+        {
+            Topic.UserId = UserId;
+            var result = await Topics.CreateAsync(Topic);
+
+            if (!result)
+            {
+                Snackbar.Add("Ocorreu um erro ao tentar criar a conta", Severity.Error);
+                isLoading = false;
+                return;
+            }
+
+            Snackbar.Add("Conta Criada com Sucesso!!", Severity.Success);
+        }
+
+        if (OnOkButtonClicked is not null)
+            OnOkButtonClicked.Invoke();
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+}

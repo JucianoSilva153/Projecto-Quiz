@@ -1,23 +1,66 @@
+using Microsoft.EntityFrameworkCore;
 using Quiz.Domain.Common.DTOs;
+using Quiz.Domain.Common.Enum;
 using Quiz.Domain.Entities.Kwizzes;
+using Quiz.Domain.Entities.Questions;
+using Quiz.Persistence.Context;
 
 namespace Quiz.Persistence.Repositories;
 
 public class KwizRepository : IKwiz
 {
-    public Task<bool> CreateAsync(Kwiz entity)
+    private IQuestion _questionRepository;
+    private AppDbContext _dbContext;
+
+    public KwizRepository(IQuestion questionRepository, AppDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _questionRepository = questionRepository;
+        _dbContext = dbContext;
     }
 
-    public Task<QuizDto> GetByIdAsync(Guid id)
+    public async Task<bool> CreateAsync(Kwiz entity)
     {
-        throw new NotImplementedException();
+        await _dbContext.Kwizzes.AddAsync(entity);
+        var result = await _dbContext.SaveChangesAsync();
+        if (result <= 0)
+            return false;
+        return true;
     }
 
-    public Task<IEnumerable<QuizDto>> GetAllAsync()
+    public async Task<KwizDto?> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        return (await GetAllAsync()).FirstOrDefault(k => k.Id == id);
+    }
+
+    public async Task<IEnumerable<KwizDto>> GetAllAsync()
+    {
+        var kwizDtos = await _dbContext.Kwizzes
+            .Include(k => k.User)
+            .Select(k => new KwizDto
+            {
+                Id = k.Id,
+                OwnerName = k.User.Name ?? "",
+                QuizName = k.Name,
+                TopicName = k.Topic.Name,
+                MaxPoint = k.MaxPoint,
+                TopicDescription = k.Topic.Description ?? "",
+                QuestionDtos = k.Questions.Select(q => new QuestionDto
+                {
+                    Id = q.Id,
+                    QuizId = q.QuizId,
+                    Statement = q.Statement,
+                    Answers = q.Answers.Select(a => new AnswerDto
+                    {
+                        Id = a.Id,
+                        QuestionId = a.QuestionId,
+                        Text = a.Text,
+                        IsCorrect = a.IsCorrect
+                    }).ToList()
+                }).ToList()
+            })
+            .ToListAsync();
+
+        return kwizDtos.AsEnumerable();
     }
 
     public Task<bool> UpdateAsync(Kwiz entity)
@@ -25,8 +68,15 @@ public class KwizRepository : IKwiz
         throw new NotImplementedException();
     }
 
-    public Task DeleteAsync(Guid id)
+    public Task<bool> DeleteAsync(Guid id)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<IEnumerable<KwizDto>> GetUserKwizzes(AccountDto user)
+    {
+        if (user.AccountType == AccountType.Player)
+            return Enumerable.Empty<KwizDto>();
+        return (await GetAllAsync()).Where(k => k.UserId == user.UserId);
     }
 }

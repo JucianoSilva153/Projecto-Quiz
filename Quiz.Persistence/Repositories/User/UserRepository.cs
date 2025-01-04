@@ -1,33 +1,57 @@
+using Microsoft.EntityFrameworkCore;
 using Quiz.Domain.Common.DTOs;
 using Quiz.Domain.Entities.Accounts;
 using Quiz.Domain.Entities.Users;
+using Quiz.Persistence.Context;
 
 namespace Quiz.Persistence.Repositories;
 
 public class UserRepository : IUser
 {
-    public Task<bool> CreateAsync(User entity)
+    private readonly AppDbContext _dbContext;
+    private readonly IAccount _accountRepository;
+
+    public UserRepository(AppDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
     }
 
-    public Task<AccountDto> GetByIdAsync(Guid id)
+    public async Task<bool> CreateAsync(User entity)
     {
-        throw new NotImplementedException();
+        await _dbContext.Users.AddAsync(entity);
+        var userResult = await _dbContext.SaveChangesAsync();
+
+        if (userResult <= 0)
+            return false;
+
+        return true;
     }
 
-    public Task<IEnumerable<AccountDto>> GetAllAsync()
+    public async Task<AccountDto?> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        return await _accountRepository.GetByIdAsync(id);
     }
 
-    public Task<bool> UpdateAsync(User entity)
+    public async Task<IEnumerable<AccountDto>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        return await _accountRepository.GetAllAsync();
     }
 
-    public Task DeleteAsync(Guid id)
+    public async Task<bool> UpdateAsync(User entity)
     {
-        throw new NotImplementedException();
+        var userToUpdate = await _dbContext.Users.FirstAsync(user => user.Id == entity.Id);
+
+        userToUpdate.Name = entity.Name;
+        userToUpdate.Surname = entity.Surname;
+
+        var result = await _dbContext.SaveChangesAsync();
+        if (result <= 0)
+            return false;
+        return true;
+    }
+
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        return await _accountRepository.DeleteAsync(id);
     }
 }
