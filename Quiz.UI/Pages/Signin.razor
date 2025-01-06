@@ -86,6 +86,7 @@
             return;
         }
 
+        Account.AccountType = CurrentAccountType;
         var sucess = await Accounts.CreateAsync(Account);
         if (!sucess)
         {
@@ -93,7 +94,7 @@
             return;
         }
 
-        await Dialog.ShowInfoDialog("Cadastro", "Conta Criada Com Sucesso!", () => { Navigator.NavigateTo("/dashboard");});
+        await Dialog.ShowInfoDialog("Cadastro", "Conta Criada Com Sucesso!", () => { Navigator.NavigateTo("/login");});
     }
 
 

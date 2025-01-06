@@ -1,5 +1,14 @@
-<h3>PlayerDashboard</h3>
+<MudContainer MaxWidth="MaxWidth.Large" Class=" pt-5" Style="height: 50vh">
+    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Style="height: 100%">
+        <div>
+            <MudText Typo="Typo.h6" Color="Color.Primary">Seja Bem-vindo</MudText>
+            <MudText Typo="Typo.caption">Comece explorando KWIZZES</MudText>
+        </div>
+        <MudButton @onclick='() => { Navigator.NavigateTo("kwizzes"); }' Variant="Variant.Filled" Color="Color.Primary">Explorar!!</MudButton>
+    </MudStack>
+</MudContainer>
 
 @code {
-    
+[Parameter] public CurrentUser user { get; set; } = new CurrentUser();
+
 }

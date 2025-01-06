@@ -6,12 +6,22 @@
     <MudStack Style="height: 20%" Justify="Justify.Center" AlignItems="AlignItems.Center">
         <MudText Typo="Typo.h4">Os Melhores KWIZZES</MudText>
     </MudStack>
+    <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="py-5">
+        @if (isAllowedToPlay)
+        {
+            <MudButton Href="/dashboard" Variant="Variant.Filled" Color="Color.Primary">Ir para a Dashboard</MudButton>
+        }
+        else
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary">Pagina Inicial</MudButton>
+        }
+    </MudStack>
     <MudStack Justify="Justify.Center" Row Class="px-4" AlignItems="AlignItems.Center">
-        <MudTextField Variant="Variant.Outlined" 
-                      T="string" 
-                      Placeholder="Pesquisar KWIZ" 
-                      @bind-Value="search" 
-                      Adornment="Adornment.Start" 
+        <MudTextField Variant="Variant.Outlined"
+                      T="string"
+                      Placeholder="Pesquisar KWIZ"
+                      @bind-Value="search"
+                      Adornment="Adornment.Start"
                       AdornmentColor="Color.Primary"
                       Immediate="true"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
@@ -25,7 +35,7 @@
             <MudSelectItem Value="@string.Empty">Sem Filtro</MudSelectItem>
             @foreach (var topic in TopicList)
             {
-            <MudSelectItem Value="topic.TopicName">@topic.TopicName</MudSelectItem>
+                <MudSelectItem Value="topic.TopicName">@topic.TopicName</MudSelectItem>
             }
         </MudSelect>
     </MudStack>

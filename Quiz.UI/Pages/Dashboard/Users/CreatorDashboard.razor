@@ -1,8 +1,10 @@
-<MudContainer MaxWidth="MaxWidth.Large" Class=" pt-5">
-    <MudStack>
+<MudContainer MaxWidth="MaxWidth.Large" Class=" pt-5" Style="height: 50vh">
+    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Style="height: 100%">
         <div>
-            <MudText>Seja Bem-vindo, @user.MyAccount!.Name</MudText>
+            <MudText Align="Align.Center" Typo="Typo.h6" Color="Color.Primary">Seja Bem-vindo</MudText>
+            <MudText Align="Align.Center" Typo="Typo.caption">Comece criando seus KWIZZES!!</MudText>
         </div>
+        <MudButton @onclick='() => { Navigator.NavigateTo("dashboard/kwizzes"); }' Variant="Variant.Filled" Color="Color.Primary">Criar!!</MudButton>
     </MudStack>
 </MudContainer>
 
