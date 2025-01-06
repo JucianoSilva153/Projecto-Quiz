@@ -35,6 +35,42 @@ public class AccountDataAcess
             return false;
         }
     }
+    
+    public async Task<bool> UpdateAccountAsync(AccountDto account, string route)
+    {
+        try
+        {
+            var json = JsonConvert.SerializeObject(account);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PutAsync($"api/{route}", content);
+            response.EnsureSuccessStatusCode();
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Erro ao criar usuário: {ex.Message}");
+            return false;
+        }
+    }
+    
+    public async Task<bool> UpdateUserAsync(UserDto user)
+    {
+        try
+        {
+            var json = JsonConvert.SerializeObject(user);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PutAsync($"api/user/", content);
+            response.EnsureSuccessStatusCode();
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Erro ao criar usuário: {ex.Message}");
+            return false;
+        }
+    }
 
     public async Task<ApiResponse<IEnumerable<AccountDto>>?> GetAll()
     {
@@ -53,6 +89,23 @@ public class AccountDataAcess
         return null;
     }
 
+    public async Task<ApiResponse<AccountDto>?> GetById(Guid id)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/account/{id}");
+            response.EnsureSuccessStatusCode();
+            var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<AccountDto>>();
+            return apiResponse;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+
+        return null;
+    }
+    
     public async Task<ApiResponse<CurrentUser>?> LoginAsync(LoginDto loginAcess)
     {
         try

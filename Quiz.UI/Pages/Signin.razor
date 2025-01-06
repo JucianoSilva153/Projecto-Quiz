@@ -42,6 +42,10 @@
                           Adornment="Adornment.End"
                           AdornmentColor="Color.Primary"
                           AdornmentIcon="@Icons.Material.Filled.Password"/>
+            <MudRadioGroup T="AccountType" @bind-Value="CurrentAccountType">
+                <MudRadio Value="AccountType.Player">Jogador</MudRadio>
+                <MudRadio Value="AccountType.Creator">Criador</MudRadio>
+            </MudRadioGroup>
             <MudText @onclick='() => Navigator.NavigateTo("/login")'
                      Align="Align.End" Color="Color.Secondary"
                      Typo="Typo.caption" Class="cursor-pointer my-2">
@@ -58,6 +62,7 @@
     public AccountDto Account { get; set; } = new();
     public string TestePassword = "";
     MudForm form;
+    AccountType CurrentAccountType;
 
     protected override async Task OnInitializedAsync()
     {
@@ -77,18 +82,18 @@
             
         if (Account is { Email: "", FullName: "" })
         {
-            Dialog.ShowInfoDialog("Cadastro", "Email nao pode estar nulo");
+            await Dialog.ShowInfoDialog("Cadastro", "Email nao pode estar nulo");
             return;
         }
 
         var sucess = await Accounts.CreateAsync(Account);
         if (!sucess)
         {
-            Dialog.ShowInfoDialog("Cadastro", "Erro ao criar Conta!");
+            await Dialog.ShowInfoDialog("Cadastro", "Erro ao criar Conta!");
             return;
         }
 
-        Dialog.ShowInfoDialog("Cadastro", "Conta Criada Com Sucesso!");
+        await Dialog.ShowInfoDialog("Cadastro", "Conta Criada Com Sucesso!", () => { Navigator.NavigateTo("/dashboard");});
     }
 
 

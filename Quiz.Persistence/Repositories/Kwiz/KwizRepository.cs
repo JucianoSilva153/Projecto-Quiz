@@ -43,6 +43,7 @@ public class KwizRepository : IKwiz
                 QuizName = k.Name,
                 TopicName = k.Topic.Name,
                 MaxPoint = k.MaxPoint,
+                UserId = k.UserId,
                 TopicDescription = k.Topic.Description ?? "",
                 QuestionDtos = k.Questions.Select(q => new QuestionDto
                 {

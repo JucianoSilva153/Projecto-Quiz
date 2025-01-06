@@ -1,5 +1,158 @@
-<h3>AccountManagementPage</h3>
+@page "/dashboard/account"
+@layout DashboardLayout
+
+<PageName Title="Minha Conta"></PageName>
+
+<MudContainer Class="py-8">
+    <MudPaper Class="px-3 py-3">
+        <MudStack Row>
+            <div>
+                <MudAvatar Size="Size.Large"></MudAvatar>
+            </div>
+            <div>
+                <MudText>Nome Completo: @(string.IsNullOrEmpty(CurrentAccount.FullName.Trim()) ? "------" : CurrentAccount.FullName)</MudText>
+                <MudText>Nome de Usuario: @CurrentAccount.User</MudText>
+                <MudText>@CurrentAccount.AccountType.ToFriendlyString()</MudText>
+            </div>
+        </MudStack>
+    </MudPaper>
+    <MudStack Row Class="py-4">
+        <MudPaper Width="50%" Height="40vh" Class="px-4 py-4">
+            <MudText Typo="Typo.h6" Color="Color.Primary">Identidade</MudText>
+            <MudTextField T="string" Label="Nome"
+                          Required="true"
+                          @bind-Value="Name"
+                          RequiredError="Insira seu novo nome"
+                          Adornment="Adornment.End"
+                          Variant="Variant.Outlined"
+                          AdornmentColor="Color.Primary"
+                          AdornmentIcon="@Icons.Material.Filled.TextFields"/>
+            <MudTextField T="string" Label="Sobrenome"
+                          Required="true"
+                          @bind-Value="Surname"
+                          RequiredError="Insira seu novo sobrenome"
+                          Adornment="Adornment.End"
+                          Variant="Variant.Outlined"
+                          AdornmentColor="Color.Primary"
+                          AdornmentIcon="@Icons.Material.Filled.TextFields"/>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="UpdateInfo">Salvar</MudButton>
+        </MudPaper>
+        <MudPaper Width="50%" Height="40vh" Class="px-4 py-4">
+            <MudText Typo="Typo.h6" Color="Color.Primary">Password</MudText>
+
+            <MudTextField T="string" Label="Password"
+                          Required="true"
+                          @bind-Value="oldPassword"
+                          RequiredError="Insira a password atual"
+                          Adornment="Adornment.End"
+                          Variant="Variant.Outlined"
+                          AdornmentColor="Color.Primary"
+                          InputType="InputType.Password"
+                          AdornmentIcon="@Icons.Material.Filled.Password"/>
+
+            <MudTextField T="string" Label="Nova Password"
+                          Required="true"
+                          @bind-Value="newPassword"
+                          RequiredError="Insira a nova password"
+                          Adornment="Adornment.End"
+                          Variant="Variant.Outlined"
+                          InputType="InputType.Password"
+                          AdornmentColor="Color.Primary"
+                          AdornmentIcon="@Icons.Material.Filled.Password"/>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="ChangePassword">Salvar</MudButton>
+        </MudPaper>
+    </MudStack>
+</MudContainer>
 
 @code {
-    
+
+    [CascadingParameter] public CurrentUser user { get; set; } = new CurrentUser();
+    public AccountDto CurrentAccount { get; set; } = new AccountDto();
+
+    public string Name;
+    public string Surname;
+
+    string newPassword;
+    string oldPassword;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Accounts.GetById(user.MyAccount.AccountId);
+        if (result is null)
+        {
+            Snackbar.Add("Erro ao carregar seus dados", Severity.Error);
+            return;
+        }
+
+        CurrentAccount = result.Data ?? new AccountDto();
+    }
+
+    public async void ChangePassword()
+    {
+        if (string.IsNullOrEmpty(newPassword) || string.IsNullOrEmpty(oldPassword))
+        {
+            Snackbar.Add("Insira a nova e antiga palavra passe!!");
+            return;
+        }
+
+        var loginResult = await Accounts.LoginAsync(new LoginDto
+        {
+            Email = user.MyAccount!.Email,
+            Password = oldPassword,
+            User = user.MyAccount!.User
+        });
+
+        if (loginResult!.Success)
+        {
+            var accountToUpdate = new AccountDto
+            {
+                AccountId = user.MyAccount.AccountId,
+                UserId = user.MyAccount.UserId,
+                Password = newPassword
+            };
+            var result = await Accounts.UpdateAccountAsync(accountToUpdate, "account/password");
+            if (result)
+            {
+                Snackbar.Add("Palavrapasse atualizada com sucesso!!", Severity.Success);
+                await OnInitializedAsync();
+            }
+            else
+            {
+                Snackbar.Add("Erro ao tentar atualizar a tua palavrapasse!!", Severity.Error);
+            }
+        }
+        else
+        {
+            Snackbar.Add("Erro ao tentar atualizar a tua palavra!! Insira a palavra passe atual correcta!!", Severity.Error);
+        }
+    }
+
+    public async void UpdateInfo()
+    {
+        if (string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Surname))
+        {
+            Snackbar.Add("Insira seu nome e Sobrenome!!", Severity.Warning);
+            return;
+        }
+
+        var user = new UserDto
+        {
+            Id = CurrentAccount.UserId,
+            Name = Name,
+            Surname = Surname
+        };
+
+        var result = await Accounts.UpdateUserAsync(user);
+        if (result)
+        {
+            Snackbar.Add("Conta atualizada com sucesso!!", Severity.Success);
+            await OnInitializedAsync();
+        }
+        else
+        {
+            Snackbar.Add("Erro ao tentar atualizar a tua conta!!", Severity.Error);
+        }
+    }
+
 }

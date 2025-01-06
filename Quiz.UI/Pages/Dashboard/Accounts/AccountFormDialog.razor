@@ -81,7 +81,10 @@
 
         if (Mode == DialogFormMode.Add)
         {
+            Data.Name = Nome;
+            Data.Surname = Sobrenome;
             Data.AccountType = Type;
+            Data.Password = "000000";
             var result = await Accounts.CreateAsync(Data);
 
             if (!result)

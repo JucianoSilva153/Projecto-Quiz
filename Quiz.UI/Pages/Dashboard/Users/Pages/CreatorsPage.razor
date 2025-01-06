@@ -14,7 +14,7 @@
                 </MudButton>
             </div>
             <MudSpacer/>
-            <MudTextField Placeholder="Pesquisar  criador" Adornment="Adornment.Start" Immediate="true"
+            <MudTextField Placeholder="Pesquisar  criador" T="string" @bind-Value="Search" Adornment="Adornment.Start" Immediate="true"
                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
             </MudTextField>
         </ToolBarContent>
@@ -22,7 +22,7 @@
             <PropertyColumn Property="a => a.FullName" Title="Nome Completo"></PropertyColumn>
             <PropertyColumn Property="a => a.User" Title="Nome de Usuario"></PropertyColumn>
             <PropertyColumn Property="a => a.Email" Title="Email"></PropertyColumn>
-            <TemplateColumn>
+            <!--<TemplateColumn>
                 <CellTemplate>
                     <MudStack Row>
                         <MudIconButton Size="Size.Small" Color="Color.Primary" Icon="@Icons.Material.Filled.Visibility"></MudIconButton>
@@ -30,7 +30,7 @@
                         <MudIconButton Size="Size.Small" Color="Color.Error" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
                     </MudStack>
                 </CellTemplate>
-            </TemplateColumn>
+            </TemplateColumn>-->
         </Columns>
     </MudDataGrid>
 </MudContainer>
@@ -38,11 +38,20 @@
 @code {
     public IEnumerable<AccountDto> _accounts { get; set; } = Enumerable.Empty<AccountDto>();
 
+    string Search = "";
+    
     public IEnumerable<AccountDto> AccountList
     {
         get
         {
-            return _accounts.Where(a => a.AccountType == AccountType.Creator);
+            var result = _accounts.Where(a => a.AccountType == AccountType.Creator);
+
+            if (!string.IsNullOrEmpty(Search))
+            {
+                result = result.Where(r => r.User.Contains(Search));
+            }
+
+            return result;
         }
     }
 

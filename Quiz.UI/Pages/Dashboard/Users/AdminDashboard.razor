@@ -7,23 +7,9 @@
                 <MudIcon Size="Size.Large" Title="Utilizadores" Color="Color.Primary" Icon="@Icons.Material.Filled.Groups2"></MudIcon>
             </MudStack>
         </MudPaper>
-
         <MudPaper Width="20%" Height="15vh">
             <MudStack Style="height: 100%" Justify="Justify.Center" AlignItems="AlignItems.Center">
-                <MudText Typo="Typo.h5" Color="Color.Primary">0</MudText>
-                <MudIcon Size="Size.Large" Title="Kwizzes Activos" Color="Color.Primary" Icon="@Icons.Material.Filled.Check"></MudIcon>
-            </MudStack>
-        </MudPaper>
-
-        <MudPaper Width="20%" Height="15vh">
-            <MudStack Style="height: 100%" Justify="Justify.Center" AlignItems="AlignItems.Center">
-                <MudText Typo="Typo.h5" Color="Color.Primary">0</MudText>
-                <MudIcon Size="Size.Large" Title="Kwizzes Pendentes" Color="Color.Primary" Icon="@Icons.Material.Filled.Pending"></MudIcon>
-            </MudStack>
-        </MudPaper>
-        <MudPaper Width="20%" Height="15vh">
-            <MudStack Style="height: 100%" Justify="Justify.Center" AlignItems="AlignItems.Center">
-                <MudText Typo="Typo.h5" Color="Color.Primary">0</MudText>
+                <MudText Typo="Typo.h5" Color="Color.Primary">@PointList.Count()</MudText>
                 <MudIcon Size="Size.Large" Title="Partidas de KWIZ" Color="Color.Primary" Icon="@Icons.Material.Filled.Gamepad"></MudIcon>
             </MudStack>
         </MudPaper>
@@ -31,9 +17,9 @@
 
     <MudStack Row="true" Class="pt-8">
         <MudStack Style="width: 50%">
-            <MudDataGrid Items="@user.Kwizzes">
+            <MudDataGrid Items="@user.Kwizzes" Hover="true">
                 <ToolBarContent>
-                    <MudText Color="Color.Primary" Typo="Typo.h6">Kwizzes Pendentes</MudText>
+                    <MudText Color="Color.Primary" Typo="Typo.h6">Kwizzes Recentes</MudText>
                 </ToolBarContent>
                 <Columns>
                     <PropertyColumn Property="k => k.OwnerName" Title="Criado Por"></PropertyColumn>
@@ -42,14 +28,14 @@
                 </Columns>
             </MudDataGrid>
         </MudStack>
-        <MudStack Style="width: 50%">
+       <!-- <MudStack Style="width: 50%">
             <MudPaper Class="pa-4">
                 <MudText Typo="Typo.h6" Color="Color.Primary">Acessos Mensais (Ultimos 4 meses)</MudText>
                 <div>
                     <MudChart ChartType="ChartType.Donut" Width="250px" Height="250px" @bind-SelectedIndex="Index" InputData="@data" InputLabels="@labels"></MudChart>
                 </div>
             </MudPaper>
-        </MudStack>
+        </MudStack> -->
     </MudStack>
 
 </MudContainer>
@@ -59,6 +45,16 @@
     [Parameter] public CurrentUser user { get; set; } = new CurrentUser();
     public string UserName => user.MyAccount?.User ?? "";
 
+    public IEnumerable<PointDto> PointList { get; set; } = Enumerable.Empty<PointDto>();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Points.GetAll();
+        if (result is not null)
+        {
+            PointList = result.Data!;
+        }
+    }
 
     int dataSize = 4;
     private int Index = -1;

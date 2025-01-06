@@ -7,13 +7,14 @@
 <MudContainer Class="py-8">
     <MudDataGrid Items="AccountList" Hover="true">
         <ToolBarContent>
-            <MudButton @onclick="() => {OpenAccountForm(DialogFormMode.Add); }" Color="Color.Primary" Variant="Variant.Filled">
+            <MudButton @onclick="() => { OpenAccountForm(DialogFormMode.Add); }" Color="Color.Primary" Variant="Variant.Filled">
                 <MudIcon Icon="@Icons.Material.Filled.Add"></MudIcon>
                 Novo Jogador
             </MudButton>
             <MudSpacer/>
-            <MudTextField Placeholder="Pesquisar jogador" Adornment="Adornment.Start" Immediate="true"
-                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            <MudTextField Placeholder="Pesquisar jogador" T="string" @bind-value="Search" Adornment="Adornment.Start" Immediate="true"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+            </MudTextField>
         </ToolBarContent>
         <Columns>
             <PropertyColumn Property="a => a.FullName" Title="Nome Completo"></PropertyColumn>
@@ -23,7 +24,7 @@
                 <CellTemplate>
                     <MudStack Row>
                         <MudIconButton Size="Size.Small" Color="Color.Primary" Icon="@Icons.Material.Filled.Visibility"></MudIconButton>
-                        <MudIconButton @onclick="() => {OpenAccountForm(DialogFormMode.Edit, context.Item); }" Size="Size.Small" Color="Color.Info" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
+                        <MudIconButton @onclick="() => { OpenAccountForm(DialogFormMode.Edit, context.Item); }" Size="Size.Small" Color="Color.Info" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
                         <MudIconButton Size="Size.Small" Color="Color.Error" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
                     </MudStack>
                 </CellTemplate>
@@ -40,9 +41,17 @@
     {
         get
         {
-            return _accounts.Where(a => a.AccountType == AccountType.Player);
+            var result = _accounts.Where(a => a.AccountType == AccountType.Player);
+            if (!string.IsNullOrEmpty(Search))
+            {
+                
+            }
+
+            return result;
         }
     }
+
+    public string Search = "";
 
     protected override void OnInitialized()
     {
@@ -56,9 +65,10 @@
             _accounts = result.Data!;
         StateHasChanged();
     }
-    
+
     public async void OpenAccountForm(DialogFormMode mode, AccountDto? accountDto = null)
     {
         await Dialog.ShowAccountForm(mode, AccountType.Player, accountDto, LoadAccount);
     }
+
 }

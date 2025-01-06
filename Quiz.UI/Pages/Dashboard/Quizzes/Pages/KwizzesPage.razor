@@ -11,7 +11,7 @@
                 Novo KWIZZ
             </MudButton>
             <MudSpacer/>
-            <MudTextField Placeholder="Pesquisar KWIZ" Adornment="Adornment.Start" Immediate="true"
+            <MudTextField Placeholder="Pesquisar KWIZ" @bind-Value="Search" T="string" Adornment="Adornment.Start" Immediate="true"
                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
             </MudTextField>
         </ToolBarContent>
@@ -19,7 +19,7 @@
             <PropertyColumn Property="a => a.OwnerName" Title="Criado Por"></PropertyColumn>
             <PropertyColumn Property="a => a.QuizName" Title="Titulo"></PropertyColumn>
             <PropertyColumn Property="a => a.TopicName" Title="Topico"></PropertyColumn>
-            <TemplateColumn>
+            <!--<TemplateColumn>
                 <CellTemplate>
                     <MudStack Row>
                         <MudIconButton Size="Size.Small" Color="Color.Primary" Icon="@Icons.Material.Filled.Visibility"></MudIconButton>
@@ -27,19 +27,32 @@
                         <MudIconButton Size="Size.Small" Color="Color.Error" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
                     </MudStack>
                 </CellTemplate>
-            </TemplateColumn>
+            </TemplateColumn>-->
         </Columns>
     </MudDataGrid>
 </MudContainer>
+
 
 @code {
     [CascadingParameter] public CurrentUser user { get; set; } = new CurrentUser();
 
     public IEnumerable<KwizDto> _kwizzes { get; set; } = Enumerable.Empty<KwizDto>();
 
+    string Search = "";
+
     public IEnumerable<KwizDto> KwizList
     {
-        get => _kwizzes.Where(k => k.UserId == user.MyAccount?.UserId);
+        get
+        {
+            var result = _kwizzes.Where(k => k.UserId == user.MyAccount?.UserId);
+
+            if (!string.IsNullOrEmpty(Search))
+            {
+                result = result.Where(r => r.QuizName.Contains(Search));
+            }
+
+            return result;
+        }
     }
 
     protected override void OnInitialized()

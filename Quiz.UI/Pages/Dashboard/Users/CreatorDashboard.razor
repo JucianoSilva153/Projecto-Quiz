@@ -1,5 +1,12 @@
-<h3>CreatorDashboard</h3>
+<MudContainer MaxWidth="MaxWidth.Large" Class=" pt-5">
+    <MudStack>
+        <div>
+            <MudText>Seja Bem-vindo, @user.MyAccount!.Name</MudText>
+        </div>
+    </MudStack>
+</MudContainer>
 
 @code {
-    
+    [Parameter] public CurrentUser user { get; set; } = new CurrentUser();
+
 }

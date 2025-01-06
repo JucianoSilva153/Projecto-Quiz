@@ -23,8 +23,7 @@ public class AccountRepository : IAccount
         _topicRepository = topicRepository;
         _userRepository = userRepository;
     }
-    
-    
+
 
     public async Task<bool> CreateAsync(Account entity)
     {
@@ -48,8 +47,7 @@ public class AccountRepository : IAccount
 
     public async Task<AccountDto?> GetByIdAsync(Guid id)
     {
-        var account = await _dbContext.Accounts.
-            AsNoTracking()
+        var account = await _dbContext.Accounts.AsNoTracking()
             .Include(u => u.User)
             .FirstOrDefaultAsync(account => account.Id == id);
         if (account is null)
@@ -62,7 +60,8 @@ public class AccountRepository : IAccount
             User = account.UserName,
             AccountType = account.Type,
             Email = account.Email,
-            FullName = $"{user.Name} {user.Surname}",
+            Name = user.Name!,
+            Surname = user.Surname!,
             AccountId = account.Id,
             UserId = user.Id
         };
@@ -80,7 +79,8 @@ public class AccountRepository : IAccount
                 User = account.UserName,
                 AccountType = account.Type,
                 Email = account.Email,
-                FullName = $"{user.Name} {user.Surname}",
+                Name = user.Name,
+                Surname = user.Surname,
                 AccountId = account.Id,
                 UserId = user.Id
             };
@@ -88,12 +88,26 @@ public class AccountRepository : IAccount
 
     public async Task<bool> UpdateAsync(Account entity)
     {
-        var accountToUpdate = await _dbContext.Accounts.FirstAsync(account => account.Id == entity.Id);
+        var accountToUpdate =
+            await _dbContext.Accounts.Include(u => u.User).FirstAsync(account => account.Id == entity.Id);
 
+        accountToUpdate.Email = entity.Email;
         accountToUpdate.UserName = entity.UserName;
-        accountToUpdate.Email = entity.UserName;
-        accountToUpdate.Password = entity.Password;
+        
+        var result = await _dbContext.SaveChangesAsync();
 
+        if (result <= 0)
+            return false;
+        return true;
+    }
+    
+    public async Task<bool> UpdatePasswordAsync(Account entity)
+    {
+        var accountToUpdate =
+            await _dbContext.Accounts.Include(u => u.User).FirstAsync(account => account.Id == entity.Id);
+
+        accountToUpdate.Password = entity.Password;
+        
         var result = await _dbContext.SaveChangesAsync();
 
         if (result <= 0)
@@ -130,15 +144,15 @@ public class AccountRepository : IAccount
         var user = await _dbContext.Users.FirstOrDefaultAsync(a => a.AccountId == account.Id);
         if (user is null)
             return null;
-        
-        
-        
+
+
         var currentAccount = new AccountDto
         {
             User = account.UserName,
             AccountType = account.Type,
             Email = account.Email,
-            FullName = $"{user.Name} {user.Surname}",
+            Name = user.Name!,
+            Surname = user.Surname!,
             AccountId = account.Id,
             UserId = user.Id,
             Password = account.Password
@@ -158,9 +172,6 @@ public class AccountRepository : IAccount
         if (currentUser.AccountType != AccountType.Admin)
             return Enumerable.Empty<AccountDto>();
 
-        return (await GetAllAsync()).Where(u => u.AccountId != currentUser.AccountId ).ToList();
+        return (await GetAllAsync()).Where(u => u.AccountId != currentUser.AccountId).ToList();
     }
-
-    
-    
 }

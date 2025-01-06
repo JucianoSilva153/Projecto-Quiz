@@ -7,7 +7,7 @@
 <MudContainer Class="py-8">
     <MudDataGrid Items="AccountList" Hover="true">
         <ToolBarContent>
-            <MudButton @onclick="() => { OpenAccountForm(DialogFormMode.Add); }" Color="Color.Primary" Variant="Variant.Filled">
+            <MudButton @onclick="() => { OpenAccountForm(DialogFormMode.Add); }" T="string" @bind-value="Search" Color="Color.Primary" Variant="Variant.Filled">
                 <MudIcon Icon="@Icons.Material.Filled.Add"></MudIcon>
                 Novo Administrador
             </MudButton>
@@ -20,7 +20,7 @@
             <PropertyColumn Property="a => a.FullName" Title="Nome Completo"></PropertyColumn>
             <PropertyColumn Property="a => a.User" Title="Nome de Usuario"></PropertyColumn>
             <PropertyColumn Property="a => a.Email" Title="Email"></PropertyColumn>
-            <TemplateColumn>
+            <!--<TemplateColumn>
                 <CellTemplate>
                     <MudStack Row>
                         <MudIconButton Size="Size.Small" Color="Color.Primary" Icon="@Icons.Material.Filled.Visibility"></MudIconButton>
@@ -28,7 +28,7 @@
                         <MudIconButton Size="Size.Small" Color="Color.Error" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
                     </MudStack>
                 </CellTemplate>
-            </TemplateColumn>
+            </TemplateColumn>-->
         </Columns>
     </MudDataGrid>
 </MudContainer>
@@ -38,8 +38,20 @@
 
     public IEnumerable<AccountDto> AccountList
     {
-        get { return _accounts.Where(a => a.AccountType == AccountType.Admin); }
+        get
+        {
+            var result = _accounts.Where(a => a.AccountType == AccountType.Admin);
+
+            if (!string.IsNullOrEmpty(Search))
+            {
+                result = result.Where(r => r.User.Contains(Search));
+            }
+
+            return result;
+        }
     }
+
+    public string Search = "";
 
     protected override void OnInitialized()
     {
