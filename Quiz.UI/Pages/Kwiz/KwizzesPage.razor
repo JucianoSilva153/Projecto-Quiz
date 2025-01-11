@@ -1,31 +1,11 @@
 @page "/kwizzes"
-@layout NoLayout
+@page "/kwizzes/{search}"
+@layout MenuLayout
 
+<PageName Title="Explorar"></PageName>
 
-<section id="kwizHighligh">
-    <MudStack Style="height: 20%" Justify="Justify.Center" AlignItems="AlignItems.Center">
-        <MudText Typo="Typo.h4">Os Melhores KWIZZES</MudText>
-    </MudStack>
-    <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="py-5">
-        @if (isAllowedToPlay)
-        {
-            <MudButton Href="/dashboard" Variant="Variant.Filled" Color="Color.Primary">Ir para a Dashboard</MudButton>
-        }
-        else
-        {
-            <MudButton Variant="Variant.Filled" Color="Color.Primary">Pagina Inicial</MudButton>
-        }
-    </MudStack>
+<MudContainer Class="pt-4" >
     <MudStack Justify="Justify.Center" Row Class="px-4" AlignItems="AlignItems.Center">
-        <MudTextField Variant="Variant.Outlined"
-                      T="string"
-                      Placeholder="Pesquisar KWIZ"
-                      @bind-Value="search"
-                      Adornment="Adornment.Start"
-                      AdornmentColor="Color.Primary"
-                      Immediate="true"
-                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
-        </MudTextField>
         <MudSelect Label="Filtro por Topico"
                    @bind-Value="@currentTopic"
                    Variant="Variant.Outlined"
@@ -41,37 +21,31 @@
     </MudStack>
     <MudStack Style="height: 80%">
         <div class="d-flex flex-wrap gap-4" style="overflow: auto;padding: 15px;height: 100%">
-            @foreach (var kwiz in List)
+            @foreach (var item in List)
             {
-                <MudCard Style="height: 200px">
-                    <MudCardMedia Image="images/door.jpg" Height="30" Class="mud-theme-primary" Style="width: 400px" Title="Test"/>
+            <MudItem xs="12" sm="6" md="4" lg="3" xl="3">
+                <MudCard Class="pa-2 equal-height-card" >
                     <MudCardContent>
-                        <MudText Typo="Typo.h5">@kwiz.QuizName</MudText>
-                        <MudText Typo="Typo.body2">@kwiz.TopicName</MudText>
-                        <MudText Typo="Typo.body2"></MudText>
+                        <MudText Class="card-title" Typo="Typo.h6">@item.QuizName</MudText>
+                        <MudText Class="card-description" Typo="Typo.body2">@item.TopicName</MudText>
                     </MudCardContent>
                     <MudCardActions>
-                        @if (isAllowedToPlay)
-                        {
-                            <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick='() => { Navigator.NavigateTo($"/play/{kwiz.Id}"); }'>Jogar</MudButton>
-                        }
-                        else
-                        {
-                            <MudButton Variant="Variant.Text" Color="Color.Default" @onclick='() => { Navigator.NavigateTo($"/login"); }'>Entre como Jogador</MudButton>
-                        }
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" Href=@($"/play/{item.Id}")>Jogar</MudButton>
                     </MudCardActions>
                 </MudCard>
+            </MudItem>
             }
         </div>
     </MudStack>
-</section>
+</MudContainer>
 
 @code {
     public IEnumerable<KwizDto> KwizzList { get; set; } = Enumerable.Empty<KwizDto>();
     public IEnumerable<TopicDto> TopicList { get; set; } = Enumerable.Empty<TopicDto>();
     public CurrentUser? MyAccount { get; set; }
 
-    string search = "";
+    [Parameter]
+    public string search { get; set; }
     string currentTopic = "";
 
     public IEnumerable<KwizDto> List

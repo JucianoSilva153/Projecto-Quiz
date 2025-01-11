@@ -1,0 +1,92 @@
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="Tema.Theme"/>
+<MudPopoverProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<MudLayout>
+    <MudPaper id="unique_id_scroll_section" class="d-flex py-2 px-2">
+        <div class="d-flex align-center cursor-pointer" style="width: 20%">
+            <MudAvatar Size="Size.Large" Color="Color.Primary" @onclick='() => { Navigator.NavigateTo("/"); }'>KwZ</MudAvatar>
+        </div>
+        <div Class="d-flex justify-end align-center gap-4" style="width: 80%">
+            <MudPaper Elevation="0" Style="background-color: inherit;">
+                <MudLink Href="/">
+                    <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Home">Inicio</MudButton>
+                </MudLink>
+            </MudPaper>
+            <MudPaper Elevation="0" Style="background-color: inherit">
+                <MudButton Color="Color.Primary" Href="kwizzes" StartIcon="@Icons.Material.Filled.Explore">Explorar</MudButton>
+            </MudPaper>
+            <MudPaper Elevation="0" Style="background-color: inherit;width: 50%">
+                <MudTextField T="string" @bind-Value="value" OnKeyDown="OnEnter" Variant="Variant.Outlined" Placeholder="Pesquisar quiz" Adornment="Adornment.Start" Immediate="true"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" FullWidth="true">
+                </MudTextField>
+            </MudPaper>
+            <MudPaper Elevation="0" Style="background-color: inherit">
+                <MudButton Color="Color.Primary" @onclick="OpenSetUpKwizDialog" StartIcon="@Icons.Material.Filled.AddCircleOutline">Criar Quiz</MudButton>
+            </MudPaper>
+            <MudPaper Elevation="0" Style="background-color: transparent;">
+                @if (currentUser is null)
+                {
+                    <MudButton Color="Color.Primary" @onclick='() => Navigator.NavigateTo("/login")' Size="Size.Large" Variant="Variant.Outlined">Entrar</MudButton>
+                }
+                else
+                {
+                    <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Rounded.AccountCircle" @onclick='() => Navigator.NavigateTo("/dashboard")' Size="Size.Large" Style="color:#1b6ec2 "></MudIconButton>
+                }
+            </MudPaper>
+        </div>
+    </MudPaper>
+    @Body
+</MudLayout>
+
+<MudScrollToTop TopOffset="50"
+                Selector="#unique_id_scroll_section"
+                VisibleCssClass="visible absolute"
+                HiddenCssClass="invisible">
+    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ArrowUpward" Color="Color.Primary">Go to top</MudButton>
+</MudScrollToTop>
+
+
+@code {
+
+    string value = "";
+    public CurrentUser? currentUser { get; set; } = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await User.GetItemAsync<CurrentUser>("user");
+        currentUser = user;
+    }
+
+    private void OnEnter(KeyboardEventArgs obj)
+    {
+        if (obj.Key == "Enter")
+        {
+            Navigator.NavigateTo($"kwizzes/{value}");
+        }
+    }
+    
+    public async void OpenSetUpKwizDialog()
+    {
+        if (currentUser is null)
+        {
+            Snackbar.Add("Para poder criar Kwizzes, voce precisa entrar em sua conta!!!");
+            return;
+        }
+
+        if (currentUser.MyAccount!.AccountType != AccountType.Creator)
+        {
+            Snackbar.Add("Para poder criar Kwizzes, voce precisa ter um conta de Criador!!");
+            return;
+        }
+        
+        await Dialog.ShowSetUpKwizDialog(currentUser.MyAccount.UserId, () =>
+        {
+            Navigator.NavigateTo("/dashboard");
+        });
+    }
+
+}

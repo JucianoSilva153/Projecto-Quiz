@@ -1,0 +1,92 @@
+[
+  {
+    "statement": "Qual é o elemento químico mais abundante no universo?",
+    "options": [
+      { "text": "Oxigênio", "isCorrect": false },
+      { "text": "Carbono", "isCorrect": false },
+      { "text": "Hidrogênio", "isCorrect": true },
+      { "text": "Hélio", "isCorrect": false }
+    ]
+  },
+  {
+    "statement": "Qual é a unidade básica da vida?",
+    "options": [
+      { "text": "Célula", "isCorrect": true },
+      { "text": "Tecido", "isCorrect": false },
+      { "text": "Átomo", "isCorrect": false },
+      { "text": "Molécula", "isCorrect": false }
+    ]
+  },
+  {
+    "statement": "Qual é o maior órgão do corpo humano?",
+    "options": [
+      { "text": "Pulmões", "isCorrect": false },
+      { "text": "Coração", "isCorrect": false },
+      { "text": "Fígado", "isCorrect": false },
+      { "text": "Pele", "isCorrect": true }
+    ]
+  },
+  {
+    "statement": "Qual é o planeta conhecido como Planeta Vermelho?",
+    "options": [
+      { "text": "Marte", "isCorrect": true },
+      { "text": "Júpiter", "isCorrect": false },
+      { "text": "Saturno", "isCorrect": false },
+      { "text": "Vênus", "isCorrect": false }
+    ]
+  },
+  {
+    "statement": "Qual é o fenômeno natural responsável pelo arco-íris?",
+    "options": [
+      { "text": "Reflexão da luz", "isCorrect": false },
+      { "text": "Refração da luz", "isCorrect": true },
+      { "text": "Dispersão de partículas", "isCorrect": false },
+      { "text": "Interferência da luz", "isCorrect": false }
+    ]
+  },
+  {
+    "statement": "Qual gás é essencial para a respiração humana?",
+    "options": [
+      { "text": "Gás carbônico", "isCorrect": false },
+      { "text": "Hidrogênio", "isCorrect": false },
+      { "text": "Oxigênio", "isCorrect": true },
+      { "text": "Nitrogênio", "isCorrect": false }
+    ]
+  },
+  {
+    "statement": "Qual é a velocidade da luz no vácuo?",
+    "options": [
+      { "text": "150.000 km/s", "isCorrect": false },
+      { "text": "1.080.000 km/s", "isCorrect": false },
+      { "text": "100.000 km/s", "isCorrect": false },
+      { "text": "299.792 km/s", "isCorrect": true },
+    ]
+  },
+  {
+    "statement": "Quem formulou a teoria da gravitação universal?",
+    "options": [
+      { "text": "Galileu Galilei", "isCorrect": false },
+      { "text": "Isaac Newton", "isCorrect": true },
+      { "text": "Albert Einstein", "isCorrect": false },
+      { "text": "Nikola Tesla", "isCorrect": false }
+    ]
+  },
+  {
+    "statement": "Qual é a unidade de medida da intensidade da corrente elétrica?",
+    "options": [
+      { "text": "Ampere", "isCorrect": true },
+      { "text": "Volts", "isCorrect": false },
+      { "text": "Ohms", "isCorrect": false },
+      { "text": "Watts", "isCorrect": false }
+    ]
+  },
+  {
+    "statement": "O que as plantas absorvem durante a fotossíntese?",
+    "options": [
+      { "text": "Oxigênio", "isCorrect": false },
+      { "text": "Dióxido de carbono", "isCorrect": true },
+      { "text": "Hidrogênio", "isCorrect": false },
+      { "text": "Nitrogênio", "isCorrect": false }
+    ]
+  }
+]

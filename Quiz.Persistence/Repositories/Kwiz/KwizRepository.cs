@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Quiz.Domain.Common.DTOs;
 using Quiz.Domain.Common.Enum;
 using Quiz.Domain.Entities.Kwizzes;
+using Quiz.Domain.Entities.Points;
 using Quiz.Domain.Entities.Questions;
 using Quiz.Persistence.Context;
 
@@ -44,6 +45,8 @@ public class KwizRepository : IKwiz
                 TopicName = k.Topic.Name,
                 MaxPoint = k.MaxPoint,
                 UserId = k.UserId,
+                CreatedAt = k.CreatedAt,
+                TimesPlayed = _dbContext.Points.Count(p => p.QuizId == k.Id),
                 TopicDescription = k.Topic.Description ?? "",
                 QuestionDtos = k.Questions.Select(q => new QuestionDto
                 {
@@ -63,7 +66,7 @@ public class KwizRepository : IKwiz
 
         return kwizDtos.AsEnumerable();
     }
-
+    
     public Task<bool> UpdateAsync(Kwiz entity)
     {
         throw new NotImplementedException();

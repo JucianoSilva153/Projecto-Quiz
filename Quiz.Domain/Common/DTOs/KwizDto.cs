@@ -9,5 +9,7 @@ public record KwizDto
     public string QuizName { get; set; }
     public string TopicName { get; set; }
     public string TopicDescription { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public int TimesPlayed { get; set; }
     public IEnumerable<QuestionDto> QuestionDtos { get; set; } = Enumerable.Empty<QuestionDto>();
 }

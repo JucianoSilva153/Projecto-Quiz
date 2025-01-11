@@ -1,125 +1,87 @@
 ﻿@page "/"
+@using Quiz.UI.Helpers
+@layout MenuLayout
 
 <PageTitle>KWIZ</PageTitle>
 
-<menu class="d-flex" Style="background-color: white; color: #1b6ec2;" Elevation="0">
-    <div class="d-flex flex-1 align-center">
-        <MudIcon Icon="@Icons.Material.Rounded.Quiz" Class=""></MudIcon>
-    </div>
-    <div Class="d-flex justify-center align-center gap-4">
-        <MudPaper Elevation="0" Style="background-color: inherit;">
-            <MudLink Href="/">
-                <MudButton Style="color: #1b6ec2;">Inicio</MudButton>
-            </MudLink>
-        </MudPaper>
-        <MudPaper Elevation="0" Style="background-color: inherit">
-            <MudButton Style="color: #1b6ec2;">Explorar</MudButton>
-        </MudPaper>
-        <MudPaper Elevation="0" Style="background-color: inherit">
-            <MudButton Style="color: #1b6ec2;">Sobre o KWIZ</MudButton>
-        </MudPaper>
-        <MudPaper Elevation="0" Style="background-color: transparent;">
-            <MudIconButton Icon="@Icons.Material.Rounded.AccountCircle" @onclick='() => Navigator.NavigateTo("/login")' Size="Size.Large" Style="color:#1b6ec2 "></MudIconButton>
-        </MudPaper>
-    </div>
-</menu>
-<section id="heroSec">
-    <MudPaper Elevation="0" Height="90vh" Class="d-flex justify-center align-center flex-row">
-        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
-            <MudText Typo="Typo.h2">Apresentamos-te o KWIZ</MudText>
-            <MudText Typo="Typo.subtitle1">A plataforma que vai revolucionar a forma como você aprende se divertindo!!</MudText>
-            <MudStack Row="true">
-                <MudButton Style="background-color: #1b6ec2; color: white" Href="/kwizzes">Explorar</MudButton>
-            </MudStack>
-        </MudStack>
-    </MudPaper>
-</section>
-<!--
+<MudContainer Gutters="true" Class="mt-10">
+    @* Seccao de Destaques *@
+    
+    <MudStack Elevation="0">
+        <MudText Color="Color.Primary" Typo="Typo.h4" Class="mb-4" >Destaques</MudText>
+        <MudCarousel Class="custom-carousel" TData="@CarouselSlide" ItemsSource="GetTopKwizzes" ShowBullets="false">
+            <ItemTemplate>
+                <div class="card-group">
+                    @foreach (var item in context.Items)
+                    {
+                        <MudCard Class="pa-3">
+                            <MudCardContent>
+                                <MudText Typo="Typo.h6">@item.QuizName</MudText>
+                                <MudText Typo="Typo.body2">@item.TopicName</MudText>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" Href=@($"/play/{item.Id}")>Jogar</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    }
+                </div>
+            </ItemTemplate>
+        </MudCarousel>
+    </MudStack>
 
-<section id="pointsSection">
-    <MudStack Style="height: 20%" Justify="Justify.Center" AlignItems="AlignItems.Center">
-        <MudText Typo="Typo.h4">KWIZ oferece para voce</MudText>
-    </MudStack>
-    <MudStack class="d-flex flex-wrap justify-center align-center gap-4" style="height: 80%">
-        <MudPaper Class="d-flex justify-center align-center wrap" Style="border-radius: 15px;" Elevation="4" Height="300px" Width="300px">
-            <MudIcon Icon="@Icons.Material.Rounded.Person2"></MudIcon>
-            <MudText>Title</MudText>
-        </MudPaper>
-        <MudPaper Class="d-flex justify-center align-center wrap" Style="border-radius: 15px;" Elevation="4" Height="300px" Width="300px">
-            <MudIcon Icon="@Icons.Material.Rounded.Person2"></MudIcon>
-            <MudText>Title</MudText>
-        </MudPaper>
-        <MudPaper Class="d-flex justify-center align-center wrap" Style="border-radius: 15px;" Elevation="4" Height="300px" Width="300px">
-            <MudIcon Icon="@Icons.Material.Rounded.Person2"></MudIcon>
-            <MudText>Title</MudText>
-        </MudPaper>
-    </MudStack>
-</section>
+    @* Seccao de Quizes em Alta *@
 
-<section id="">
-    <MudStack Style="height: 20%" Justify="Justify.Center" AlignItems="AlignItems.Center">
-        <MudText Typo="Typo.h4">KWIZZES de todo tipo</MudText>
+    <MudStack Elevation="0" Style="background-color: #fad3d3; padding: 4px 20px">
+        <MudText Color="Color.Error" Typo="Typo.h5" Class="mb-4">🔥 Em Alta </MudText>
+        <MudCarousel Class="custom-carousel" TData="@CarouselSlide" ItemsSource="GetFireKwizzes" ShowBullets="false">
+            <ItemTemplate>
+                <div class="card-group">
+                    @foreach (var item in context.Items)
+                    {
+                        <MudCard Class="pa-3">
+                            <MudCardContent>
+                                <MudText Typo="Typo.h6">@item.QuizName</MudText>
+                                <MudText Typo="Typo.body2">@item.TopicName</MudText>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" Href=@($"/play/{item.Id}")>Jogar</MudButton>                            </MudCardActions>
+                        </MudCard>
+                    }
+                </div>
+            </ItemTemplate>
+        </MudCarousel>
     </MudStack>
-    <MudStack class="d-flex justify-center gap-4 flex-wrap" Row="true" style="max-height: 100%; width: 100%">
-        @foreach (var topic in TopicList)
-        {
-            <MudPaper Class="d-flex justify-center align-center" Outlined="true" Style="border-radius: 20px;border: 2px solid #1b6ec2; color: #1b6ec2" Elevation="4" Height="50px" Width="200px">
-                <MudIcon Icon="@Icons.Material.Rounded.Person2"></MudIcon>
-                <MudText>@topic.TopicName</MudText>
-            </MudPaper>
-        }
-    </MudStack>
-</section>
 
-<footer style="background-color: #1b6ec2; color: white">
-    <MudStack Row="true" Style="width: 100%;display: flex;padding: 20px">
-        <MudStack Style="width: 33.33333%" Justify="Justify.Center" AlignItems="AlignItems.Center">
-            <MudIcon Icon="@Icons.Material.Filled.Quiz"></MudIcon>
-        </MudStack>
-        <MudStack Style="width: 33.33333%">
-            <MudText Typo="Typo.subtitle1">Links Rapidos</MudText>
-            <nav style="width: 50%">
-                <MudNavLink>Inicio</MudNavLink>
-                <MudNavLink>Explore</MudNavLink>
-                <MudNavLink>Sobre o KWIZ</MudNavLink>
-                <MudNavLink>Entrar</MudNavLink>
-            </nav>
-        </MudStack>
-        <MudStack Style="width: 33.33333%">
-            <MudText Typo="Typo.subtitle1">Entre em Contacto</MudText>
-            <nav style="width: 50%">
-                <MudNavLink>
-                    <MudStack Row="true">
-                        <MudIcon Icon="@Icons.Custom.Brands.WhatsApp"></MudIcon>
-                        <MudText>WhatsApp</MudText>
-                    </MudStack>
-                </MudNavLink>
-                <MudNavLink>
-                    <MudStack Row="true">
-                        <MudIcon Icon="@Icons.Custom.Brands.Gmail"></MudIcon>
-                        <MudText>Email</MudText>
-                    </MudStack>
-                </MudNavLink>
-                <MudNavLink>
-                    <MudStack Row="true">
-                        <MudIcon Icon="@Icons.Custom.Brands.Instagram"></MudIcon>
-                        <MudText>Instagram</MudText>
-                    </MudStack>
-                </MudNavLink>
-                <MudNavLink>
-                    <MudStack Row="true">
-                        <MudIcon Icon="@Icons.Custom.Brands.X"></MudIcon>
-                        <MudText>X (Twitter)</MudText>
-                    </MudStack>
-                </MudNavLink>
-            </nav>
-        </MudStack>
-    </MudStack>
-    <MudStack Row="true" Justify="Justify.Center">
-        <MudText>2024&COPY; KWIZ</MudText>
-    </MudStack>
-</footer>
--->
+    @* Seccao de Quizes recentes *@
+
+    <MudContainer Class="pa-4">
+        <MudText Typo="Typo.h4" Class="mb-4" Color="Color.Primary">Recentes</MudText>
+        <MudGrid>
+            @foreach (var kwiz in GetRecentKwizzes)
+            {
+                foreach (var item in kwiz.Items)
+                {
+                    <MudItem xs="12" sm="6" md="4" lg="3" xl="3">
+                        <MudCard Class="pa-2 equal-height-card" >
+                            <MudCardContent>
+                                <MudText Class="card-title" Typo="Typo.h6">@item.QuizName</MudText>
+                                <MudText Class="card-description" Typo="Typo.body2">@item.TopicName</MudText>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" Href=@($"/play/{item.Id}")>Jogar</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudItem>
+                }
+            }
+        </MudGrid>
+    </MudContainer>
+
+
+    <MudScrollToTop>
+        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.ArrowCircleUp"/>
+    </MudScrollToTop>
+</MudContainer>
 
 @code {
     private MudCarousel<string> _carousel;
@@ -127,16 +89,25 @@
     private bool _bullets = true;
     private bool _enableSwipeGesture = true;
     private bool _autocycle = true;
-    private IList<string> _source = new List<string>() { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
     private int selectedIndex = 2;
 
+    public IEnumerable<CarouselSlide> GetFireKwizzes => CarouselHelper.GetTrendingKwizzes(KwizList);
+    public IEnumerable<CarouselSlide> GetTopKwizzes => CarouselHelper.GetFeaturedKwizzes(KwizList);
+    public IEnumerable<CarouselSlide> GetRecentKwizzes => CarouselHelper.GetRecentKwizzes(KwizList);
+
     public IEnumerable<TopicDto> TopicList { get; set; } = Enumerable.Empty<TopicDto>();
+    public IEnumerable<KwizDto> KwizList { get; set; } = Enumerable.Empty<KwizDto>();
 
     protected override async Task OnInitializedAsync()
     {
         var topicResult = await Topics.GetAll();
         if (topicResult is not null && topicResult.Success)
             TopicList = topicResult.Data ?? Enumerable.Empty<TopicDto>();
+
+        var kwizResult = await Kwizzes.GetAll();
+        if (kwizResult is not null && kwizResult.Success)
+            KwizList = kwizResult.Data ?? Enumerable.Empty<KwizDto>();
+        StateHasChanged();
     }
 
 }

@@ -46,9 +46,11 @@
                     </MudRadioGroup>
                 </MudStack>
                 <MudStack Class=" mx-5">
-                    <MudButton @onclick="NextQuestion" Color="Color.Primary">
-                        Proxima
-                        <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowRight"></MudIcon>
+                    <MudButton Disabled="@(readyForNext)" EndIcon="@Icons.Material.Filled.QuestionMark" @onclick="AvaluateAnswer" Color="Color.Primary">
+                        Avaliar
+                    </MudButton>
+                    <MudButton Disabled="@(!readyForNext)" EndIcon="@Icons.Material.Filled.KeyboardArrowRight" @onclick="NextQuestion" Color="Color.Primary">
+                        Proxima Pergunta
                     </MudButton>
                 </MudStack>
             </MudStack>
@@ -92,6 +94,7 @@
     bool isloading = true;
     bool ready = false;
     bool done = false;
+    bool readyForNext = false;
 
     Color resumeColor = Color.Default;
     string ResumeMessage = "";
@@ -127,24 +130,9 @@
 
     public async void NextQuestion()
     {
-        if (CurrentAnswer is null)
-        {
-            Snackbar.Add("Escolha uma resposta por favor", Severity.Info);
-            return;
-        }
-
-        if (CurrentAnswer.IsCorrect)
-        {
-            Snackbar.Add("Resposta correcta!!", Severity.Success);
-            Pontuation.PointValue += (Kwiz.MaxPoint / Kwiz.QuestionDtos.Count());
-        }
-        else
-        {
-            Snackbar.Add("Resposta incorrecta!!", Severity.Error);
-        }
-
         if (CurrentIndex != (Question.Count - 1))
         {
+            readyForNext = false;
             CurrentIndex++;
         }
         else
@@ -172,6 +160,28 @@
         }
         
         CurrentAnswer = null;
+    }
+
+    public async void AvaluateAnswer()
+    {
+        if (CurrentAnswer is null)
+        {
+            Snackbar.Add("Escolha uma resposta por favor", Severity.Info);
+            return;
+        }
+
+        if (CurrentAnswer.IsCorrect)
+        {
+            Snackbar.Add("Resposta correcta!!", Severity.Success);
+            Pontuation.PointValue += (Kwiz.MaxPoint / Kwiz.QuestionDtos.Count());
+            
+        }
+        else
+        {
+            Snackbar.Add("Resposta incorrecta!!", Severity.Error);
+        }
+        
+        readyForNext = true;
     }
 
     public async Task<bool> RegisterPontuation()

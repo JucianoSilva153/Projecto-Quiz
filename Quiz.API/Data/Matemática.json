@@ -1,0 +1,92 @@
+[
+  {
+    "statement": "Qual é a fórmula da área de um círculo?",
+    "options": [
+      { "text": "πr²", "isCorrect": true },
+      { "text": "2πr", "isCorrect": false },
+      { "text": "πd", "isCorrect": false },
+      { "text": "r²", "isCorrect": false }
+    ]
+  },
+  {
+    "statement": "Qual é a derivada de x²?",
+    "options": [
+      { "text": "2x", "isCorrect": true },
+      { "text": "x", "isCorrect": false },
+      { "text": "x²", "isCorrect": false },
+      { "text": "4x", "isCorrect": false }
+    ]
+  },
+  {
+    "statement": "O que é o valor absoluto de -5?",
+    "options": [
+      { "text": "-5", "isCorrect": false },
+      { "text": "5", "isCorrect": true },
+      { "text": "0", "isCorrect": false },
+      { "text": "Não existe valor absoluto", "isCorrect": false }
+    ]
+  },
+  {
+    "statement": "Qual é a soma dos ângulos internos de um triângulo?",
+    "options": [
+      { "text": "180°", "isCorrect": true },
+      { "text": "90°", "isCorrect": false },
+      { "text": "360°", "isCorrect": false },
+      { "text": "270°", "isCorrect": false }
+    ]
+  },
+  {
+    "statement": "Qual é o valor de π (pi) aproximado?",
+    "options": [
+      { "text": "3.14", "isCorrect": true },
+      { "text": "3.1415", "isCorrect": false },
+      { "text": "22/7", "isCorrect": false },
+      { "text": "3.1416", "isCorrect": false }
+    ]
+  },
+  {
+    "statement": "Como se chama a equação que descreve a relação entre o lado de um quadrado e sua área?",
+    "options": [
+      { "text": "A = l²", "isCorrect": true },
+      { "text": "A = 2l", "isCorrect": false },
+      { "text": "A = 4l", "isCorrect": false },
+      { "text": "A = l³", "isCorrect": false }
+    ]
+  },
+  {
+    "statement": "Qual é a fórmula do volume de um cilindro?",
+    "options": [
+      { "text": "V = πr²h", "isCorrect": true },
+      { "text": "V = 2πr²h", "isCorrect": false },
+      { "text": "V = πr²", "isCorrect": false },
+      { "text": "V = 4/3πr³", "isCorrect": false }
+    ]
+  },
+  {
+    "statement": "Qual é o valor da raiz quadrada de 25?",
+    "options": [
+      { "text": "5", "isCorrect": true },
+      { "text": "25", "isCorrect": false },
+      { "text": "10", "isCorrect": false },
+      { "text": "20", "isCorrect": false }
+    ]
+  },
+  {
+    "statement": "Em uma progressão aritmética (PA), qual é a fórmula para o termo geral?",
+    "options": [
+      { "text": "a_n = a_1 + (n-1)d", "isCorrect": true },
+      { "text": "a_n = a_1 * n", "isCorrect": false },
+      { "text": "a_n = a_1 + n", "isCorrect": false },
+      { "text": "a_n = a_1 * d", "isCorrect": false }
+    ]
+  },
+  {
+    "statement": "Qual é a fórmula da equação de segundo grau?",
+    "options": [
+      { "text": "ax² + bx + c = 0", "isCorrect": true },
+      { "text": "ax² + b + c = 0", "isCorrect": false },
+      { "text": "ax² + bx = 0", "isCorrect": false },
+      { "text": "x² + bx + c = 0", "isCorrect": false }
+    ]
+  }
+]
